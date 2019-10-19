@@ -1,6 +1,6 @@
-# DRUGSTORE-WEB
+# drugstore-web
 
-WEB version of DRUGSTORE app
+WEB version of Drugstore app
 
 ## WEB Info
 
