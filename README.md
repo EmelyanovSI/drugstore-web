@@ -4,7 +4,7 @@ WEB version of Drugstore app
 
 ## WEB Info
 
-Primary address: [https://example.herokuapp.com](https://example.herokuapp.com)
+Primary address: [https://drugstore-web-gsu-by.herokuapp.com](https://drugstore-web-gsu-by.herokuapp.com)
 
 ***
 
