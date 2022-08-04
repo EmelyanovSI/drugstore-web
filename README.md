@@ -1,10 +1,10 @@
 # drugstore-web
 
-WEB version of Drugstore app
+Drugstore web app
 
 ## WEB Info
 
-Primary address: [http://drugstore-web-gsu-by.herokuapp.com](http://drugstore-web-gsu-by.herokuapp.com)
+Primary address: [drugstore-web.herokuapp.com](http://drugstore-web.herokuapp.com)
 
 ***
 
