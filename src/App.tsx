@@ -1,15 +1,19 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Navigate, Route, Routes } from 'react-router-dom';
+
+import appTheme from './appTheme';
+import HomePage from './pages/HomePage';
+import NotFoundPage from './pages/NotFoundPage';
 
 const App: React.FC = () => {
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-            </header>
-        </div>
+        <Routes>
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/not-found" element={<NotFoundPage />} />
+            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="*" element={<Navigate to="/not-found" replace />} />
+        </Routes>
     );
 };
 
-export default App;
+export default appTheme(App);
