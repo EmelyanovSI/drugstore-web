@@ -24,7 +24,7 @@ export const drugsSlice = createSlice({
             state.loading = true;
         })
         .addCase(fetchDrugs.fulfilled, (state, action) => {
-            state.drugs = action.payload.slice(1, 10);
+            state.drugs = action.payload.slice(1, 20);
         })
         .addCase(fetchDrugs.rejected, (state, action) => {
             state.error = action.error.message;

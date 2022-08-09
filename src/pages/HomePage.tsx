@@ -1,11 +1,18 @@
 import React, { useEffect } from 'react';
-import { Alert, Box, Grid, LinearProgress, Snackbar } from '@mui/material';
+import {
+    Alert,
+    Box,
+    Grid,
+    LinearProgress,
+    Snackbar
+} from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { fetchDrugs } from '../redux/drugsSlice';
 import { fetchCountries } from '../redux/countriesSlice';
 import { Drug } from '../interfaces/drugs.interface';
 import DrugCard from '../components/DrugCard';
+import CustomizationPanel from '../components/CustomizationPanel';
 
 const autoHideDuration = 6000;
 
@@ -46,6 +53,7 @@ const HomePage: React.FC = () => {
 
     return (
         <Box>
+            <CustomizationPanel countries={countries} loading={loadingCountries} error={errorCountries} />
             {loadingDrugs ? <LinearProgress /> : null}
             <Grid container>
                 {drugs.map((value: Drug) => <DrugCard key={value._id} {...value} />)}
