@@ -1,10 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-    Alert,
-    Box,
-    LinearProgress,
-    Snackbar
-} from '@mui/material';
+import { Alert, Box, Snackbar } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { fetchDrugs, fetchDrugsByCountry } from '../redux/drugsSlice';
@@ -58,9 +53,17 @@ const HomePage: React.FC = () => {
 
     return (
         <Box>
-            <CustomizationPanel countries={countries} loading={loadingCountries} error={errorCountries} />
-            {loadingDrugs ? <LinearProgress color={'success'} /> : null}
-            <CardList drugs={drugs} loading={loadingDrugs} error={errorDrugs} />
+            <CustomizationPanel
+                countries={countries}
+                loading={loadingCountries}
+                loadingDrugs={loadingDrugs}
+                error={errorCountries}
+            />
+            <CardList
+                drugs={drugs}
+                loading={loadingDrugs}
+                error={errorDrugs}
+            />
 
             <Snackbar open={openDrugs} autoHideDuration={autoHideDuration} onClose={handleCloseDrugs}>
                 <Alert onClose={handleCloseDrugs} severity={'error'} sx={{ width: '100%' }}>

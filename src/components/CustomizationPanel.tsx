@@ -2,11 +2,13 @@ import React from 'react';
 import {
     AppBar,
     Box,
+    Checkbox,
     Chip,
     CssBaseline,
     Fab,
     Fade,
     IconButton,
+    LinearProgress,
     Skeleton,
     Tab,
     Tabs,
@@ -15,22 +17,29 @@ import {
     useScrollTrigger
 } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
 import DoneIcon from '@mui/icons-material/Done';
+import AddIcon from '@mui/icons-material/Add';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import EditOffIcon from '@mui/icons-material/EditOff';
+import EditOffOutlinedIcon from '@mui/icons-material/EditOffOutlined';
 
 import { useAppDispatch, useAppSelector } from '../redux/store';
-import { CountriesState } from '../redux/countriesSlice';
+import { CountriesState, fetchCountries } from '../redux/countriesSlice';
 import { toggleTheme } from '../redux/themeSlice';
 import headerTheme from '../theme/headerTheme';
-import { selectCountry } from '../redux/appSlice';
+import { clearDrugSelection, selectCountry } from '../redux/appSlice';
 import { Country } from '../interfaces/countries.interface';
+import { fetchDrugs, fetchDrugsByCountry } from '../redux/drugsSlice';
 
-interface Props {
+interface ScrollProps {
     children: React.ReactElement;
 }
 
-const ElevationScroll: React.FC<Props> = (props: Props) => {
+const ElevationScroll: React.FC<ScrollProps> = (props: ScrollProps) => {
     const { children } = props;
     const trigger = useScrollTrigger({
         disableHysteresis: true,
@@ -42,7 +51,7 @@ const ElevationScroll: React.FC<Props> = (props: Props) => {
     });
 };
 
-const ScrollTop: React.FC<Props> = (props: Props) => {
+const ScrollTop: React.FC<ScrollProps> = (props: ScrollProps) => {
     const { children } = props;
     const trigger = useScrollTrigger({
         threshold: 50
@@ -146,13 +155,46 @@ const ChipList: React.FC<CountriesState> = ({ loading, error, countries }: Count
     );
 };
 
-const CustomizationPanel: React.FC<CountriesState> = ({ loading, error, countries }: CountriesState) => {
+interface Props extends CountriesState {
+    loadingDrugs: boolean;
+}
+
+const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadingDrugs }: Props) => {
     const dispatch = useAppDispatch();
     const mode = useAppSelector(state => state.themeReducer.mode);
+    const selectedCountry = useAppSelector(state => state.appReducer.selectedCountry);
+    const selectedDrugs = useAppSelector(state => state.appReducer.selectedDrugs);
 
     const handleThemeModeChange = () => {
         dispatch(toggleTheme());
     };
+
+    const handleRefresh = () => {
+        dispatch(fetchCountries());
+        selectedCountry ? dispatch(fetchDrugsByCountry(selectedCountry._id)) : dispatch(fetchDrugs());
+    };
+
+    const handleSelectCancellation = () => {
+        dispatch(clearDrugSelection());
+    };
+
+    const handleDelete = () => {
+        // TODO: delete selected drugs from DB & redux storage
+    };
+
+    const handleCreate = () => {
+        // TODO: create card locally with empty fields
+    };
+
+    const button = selectedDrugs.length ? (
+        <IconButton size="small" onClick={handleSelectCancellation}>
+            <CloseIcon />
+        </IconButton>
+    ) : (
+        <IconButton disabled size="small" onClick={handleCreate}>
+            <AddIcon />
+        </IconButton>
+    );
 
     return (
         <>
@@ -162,17 +204,36 @@ const CustomizationPanel: React.FC<CountriesState> = ({ loading, error, countrie
                     <Toolbar>
                         <Typography variant="h6" sx={{ marginRight: 1 }}>Drugstore</Typography>
                         <ChipList loading={loading} error={error} countries={countries} />
-                        <Box sx={{ mr: 3, display: { xs: 'none', md: 'flex' } }}>
-                            <IconButton
-                                size="small"
-                                color="inherit"
-                                onClick={handleThemeModeChange}
-                                sx={{ ml: 1 }}
-                            >
-                                {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
-                            </IconButton>
+                        <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                            <Box sx={{ mr: 3 }}>
+                                <IconButton size="small" onClick={handleRefresh}>
+                                    <RefreshIcon />
+                                </IconButton>
+                                {button}
+                                {!!selectedDrugs.length &&
+                                    <IconButton disabled size="small" onClick={handleDelete}>
+                                        <DeleteOutlinedIcon />
+                                    </IconButton>
+                                }
+                            </Box>
+                            <Box sx={{ mr: 3 }}>
+                                <Checkbox
+                                    disabled
+                                    size={'small'}
+                                    icon={<EditOffOutlinedIcon />}
+                                    checkedIcon={<EditOffIcon />}
+                                />
+                                <Checkbox
+                                    size={'small'}
+                                    icon={<DarkModeOutlinedIcon />}
+                                    checkedIcon={<LightModeIcon />}
+                                    checked={mode === 'dark'}
+                                    onChange={handleThemeModeChange}
+                                />
+                            </Box>
                         </Box>
                     </Toolbar>
+                    {loadingDrugs ? <LinearProgress color={'success'} /> : null}
                 </AppBar>
             </ElevationScroll>
             <Toolbar id="back-to-top-anchor" />

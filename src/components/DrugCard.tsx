@@ -39,12 +39,13 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         cost
     } = props.drug;
     const selectedDrugs: Array<Drug> = useAppSelector(state => state.appReducer.selectedDrugs);
+    const isSelected = () => !!selectedDrugs.find(({ _id }) => _id === drugId);
     const [country, setCountry] = useState<Country | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [btnVisible, setBtnVisible] = useState(false);
     const [showCheck, setShowCheck] = useState(false);
-    const [checked, setChecked] = useState<boolean>(!!selectedDrugs.find(({ _id }) => _id === drugId));
+    const [checked, setChecked] = useState<boolean>(isSelected());
     const [editMode, setEditMode] = useState(false);
 
     useEffect(() => {
@@ -59,6 +60,10 @@ const DrugCard: React.FC<Props> = (props: Props) => {
             });
         }
     }, [dispatch, countryId]);
+
+    useEffect(() => {
+        setChecked(isSelected());
+    }, [selectedDrugs]);
 
     const badgeIcon = checked
         ? <CloseIcon
