@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../redux/store';
-import { fetchDrugs } from '../redux/drugsSlice';
+import { fetchDrugs, fetchDrugsByCountry } from '../redux/drugsSlice';
 import { fetchCountries } from '../redux/countriesSlice';
 import CustomizationPanel from '../components/CustomizationPanel';
 import CardList from '../components/CardList';
@@ -26,6 +26,7 @@ const HomePage: React.FC = () => {
         error: errorCountries,
         countries
     } = useAppSelector(state => state.countriesReducer);
+    const selectedCountry = useAppSelector(state => state.appReducer.selectedCountry);
 
     const [openDrugs, setOpenDrugs] = React.useState(!!errorDrugs);
     const [openCountries, setOpenCountries] = React.useState(!!errorCountries);
@@ -45,9 +46,9 @@ const HomePage: React.FC = () => {
     };
 
     useEffect(() => {
-        dispatch(fetchCountries());
-        dispatch(fetchDrugs());
-    }, [dispatch]);
+        countries.length || dispatch(fetchCountries());
+        selectedCountry ? dispatch(fetchDrugsByCountry(selectedCountry._id)) : dispatch(fetchDrugs());
+    }, [dispatch, selectedCountry]);
 
     return (
         <Box>

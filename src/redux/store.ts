@@ -16,19 +16,22 @@ import {
 import themeReducer from './themeSlice';
 import drugsReducer from './drugsSlice';
 import countriesReducer from './countriesSlice';
+import appReducer from './appSlice';
 
 const persistConfig = {
     rootReducer: { key: 'rootReducer', storage, whitelist: [] },
 
     themeReducer: { key: 'themeReducer', storage, whitelist: ['mode'] },
     drugsReducer: { key: 'drugsReducer', storage, whitelist: [] },
-    countriesReducer: { key: 'countriesReducer', storage, whitelist: [] }
+    countriesReducer: { key: 'countriesReducer', storage, whitelist: [] },
+    appReducer: { key: 'appReducer', storage, blacklist: [] },
 };
 
 const rootReducer = combineReducers({
     themeReducer: persistReducer(persistConfig.themeReducer, themeReducer),
     drugsReducer: persistReducer(persistConfig.drugsReducer, drugsReducer),
-    countriesReducer: persistReducer(persistConfig.countriesReducer, countriesReducer)
+    countriesReducer: persistReducer(persistConfig.countriesReducer, countriesReducer),
+    appReducer: persistReducer(persistConfig.appReducer, appReducer),
 });
 
 const store = configureStore({

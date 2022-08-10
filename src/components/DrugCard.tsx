@@ -19,9 +19,10 @@ import CloseIcon from '@mui/icons-material/Close';
 
 import { Drug } from '../interfaces/drugs.interface';
 import { Country } from '../interfaces/countries.interface';
-import { useAppDispatch } from '../redux/store';
+import { useAppDispatch, useAppSelector } from '../redux/store';
 import { getCountryById } from '../services/countries.service';
 import { correctName } from '../utils';
+import { selectDrug, unselectDrug } from '../redux/appSlice';
 
 type Props = {
     drug: Drug,
@@ -37,12 +38,13 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         composition,
         cost
     } = props.drug;
+    const selectedDrugs: Array<Drug> = useAppSelector(state => state.appReducer.selectedDrugs);
     const [country, setCountry] = useState<Country | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [btnVisible, setBtnVisible] = useState(false);
     const [showCheck, setShowCheck] = useState(false);
-    const [checked, setChecked] = useState(false);
+    const [checked, setChecked] = useState<boolean>(!!selectedDrugs.find(({ _id }) => _id === drugId));
     const [editMode, setEditMode] = useState(false);
 
     useEffect(() => {
@@ -62,12 +64,18 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         ? <CloseIcon
             cursor={'pointer'}
             fontSize={'inherit'}
-            onClick={() => setChecked(!checked)}
+            onClick={() => {
+                setChecked(false);
+                dispatch(unselectDrug(props.drug));
+            }}
         />
         : <CheckIcon
             cursor={'pointer'}
             fontSize={'inherit'}
-            onClick={() => setChecked(!checked)}
+            onClick={() => {
+                setChecked(true);
+                dispatch(selectDrug(props.drug));
+            }}
         />;
     const badgeContent = (
         <Box
