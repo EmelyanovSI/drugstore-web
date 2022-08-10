@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import {
     Alert,
     Box,
-    Grid,
     LinearProgress,
     Snackbar
 } from '@mui/material';
@@ -10,9 +9,8 @@ import {
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { fetchDrugs } from '../redux/drugsSlice';
 import { fetchCountries } from '../redux/countriesSlice';
-import { Drug } from '../interfaces/drugs.interface';
-import DrugCard from '../components/DrugCard';
 import CustomizationPanel from '../components/CustomizationPanel';
+import CardList from '../components/CardList';
 
 const autoHideDuration = 6000;
 
@@ -55,13 +53,7 @@ const HomePage: React.FC = () => {
         <Box>
             <CustomizationPanel countries={countries} loading={loadingCountries} error={errorCountries} />
             {loadingDrugs ? <LinearProgress color={'success'} /> : null}
-            <Grid container spacing={2} padding={2}>
-                {drugs.map((drug: Drug, index: number) => (
-                    <Grid item key={drug._id}>
-                        <DrugCard drug={drug} number={index} />
-                    </Grid>
-                ))}
-            </Grid>
+            <CardList drugs={drugs} loading={loadingDrugs} error={errorDrugs} />
 
             <Snackbar open={openDrugs} autoHideDuration={autoHideDuration} onClose={handleCloseDrugs}>
                 <Alert onClose={handleCloseDrugs} severity={'error'} sx={{ width: '100%' }}>
