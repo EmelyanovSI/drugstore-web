@@ -54,9 +54,13 @@ const HomePage: React.FC = () => {
     return (
         <Box>
             <CustomizationPanel countries={countries} loading={loadingCountries} error={errorCountries} />
-            {loadingDrugs ? <LinearProgress /> : null}
-            <Grid container>
-                {drugs.map((value: Drug) => <DrugCard key={value._id} {...value} />)}
+            {loadingDrugs ? <LinearProgress color={'success'} /> : null}
+            <Grid container spacing={2} padding={2}>
+                {drugs.map((drug: Drug, index: number) => (
+                    <Grid item key={drug._id}>
+                        <DrugCard drug={drug} number={index} />
+                    </Grid>
+                ))}
             </Grid>
 
             <Snackbar open={openDrugs} autoHideDuration={autoHideDuration} onClose={handleCloseDrugs}>
