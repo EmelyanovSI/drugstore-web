@@ -4,12 +4,14 @@ import { Alert, AlertTitle, Grid, Skeleton, Stack } from '@mui/material';
 import DrugCard from '../components/DrugCard';
 import { Drug } from '../interfaces/drugs.interface';
 import { DrugsState } from '../redux/drugsSlice';
+import { useAppSelector } from '../redux/store';
 
 const CardList: React.FC<DrugsState> = ({ loading, error, drugs }: DrugsState) => {
+    const drugsSkeletonCount = useAppSelector(state => state.appReducer.drugsSkeletonCount);
     if (loading) {
         return (
             <Grid container spacing={4} padding={2}>
-                {Array.from(Array(10)).map((_, index) => (
+                {Array.from(Array(drugsSkeletonCount)).map((_, index) => (
                     <Grid item key={index}>
                         <Stack spacing={1}>
                             <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={210} />

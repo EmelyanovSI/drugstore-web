@@ -73,6 +73,7 @@ const ScrollTop: React.FC<Props> = (props: Props) => {
 const ChipList: React.FC<CountriesState> = ({ loading, error, countries }: CountriesState) => {
     const dispatch = useAppDispatch();
     const selectedCountry = useAppSelector(state => state.appReducer.selectedCountry);
+    const countriesSkeletonCount = useAppSelector(state => state.appReducer.countriesSkeletonCount);
 
     const handleSelect = (country: Country | null) => {
         dispatch(selectCountry(country));
@@ -96,7 +97,7 @@ const ChipList: React.FC<CountriesState> = ({ loading, error, countries }: Count
         return (
             <Tabs sx={{ flexGrow: 1 }}>
                 {allChip}
-                {Array.from(Array(10).keys()).map((value) => (
+                {Array.from(Array(countriesSkeletonCount).keys()).map((value) => (
                     <Tab key={value} label={
                         <Skeleton
                             variant="text"

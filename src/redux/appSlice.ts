@@ -6,11 +6,15 @@ import { Country } from '../interfaces/countries.interface';
 export interface AppState {
     selectedDrugs: Array<Drug>;
     selectedCountry: Country | null;
+    countriesSkeletonCount: number;
+    drugsSkeletonCount: number;
 }
 
 const initialState: AppState = {
     selectedDrugs: [],
-    selectedCountry: null
+    selectedCountry: null,
+    countriesSkeletonCount: 10,
+    drugsSkeletonCount: 10
 };
 
 export const appSlice = createSlice({
@@ -28,10 +32,23 @@ export const appSlice = createSlice({
         },
         selectCountry(state, action) {
             state.selectedCountry = state.selectedCountry?._id === action.payload?._id ? null : action.payload;
+        },
+        updateCountriesSkeletonCount(state, action) {
+            state.countriesSkeletonCount = action.payload;
+        },
+        updateDrugsSkeletonCount(state, action) {
+            state.drugsSkeletonCount = action.payload;
         }
     }
 });
 
-export const { selectDrug, unselectDrug, clearDrugSelection, selectCountry } = appSlice.actions;
+export const {
+    selectDrug,
+    unselectDrug,
+    clearDrugSelection,
+    selectCountry,
+    updateCountriesSkeletonCount,
+    updateDrugsSkeletonCount
+} = appSlice.actions;
 
 export default appSlice.reducer;

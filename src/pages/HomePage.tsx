@@ -11,6 +11,7 @@ import { fetchDrugs, fetchDrugsByCountry } from '../redux/drugsSlice';
 import { fetchCountries } from '../redux/countriesSlice';
 import CustomizationPanel from '../components/CustomizationPanel';
 import CardList from '../components/CardList';
+import { updateCountriesSkeletonCount, updateDrugsSkeletonCount } from '../redux/appSlice';
 
 const autoHideDuration = 6000;
 
@@ -49,6 +50,11 @@ const HomePage: React.FC = () => {
         countries.length || dispatch(fetchCountries());
         selectedCountry ? dispatch(fetchDrugsByCountry(selectedCountry._id)) : dispatch(fetchDrugs());
     }, [dispatch, selectedCountry]);
+
+    useEffect(() => {
+        drugs.length && dispatch(updateDrugsSkeletonCount(drugs.length));
+        countries.length && dispatch(updateCountriesSkeletonCount(countries.length));
+    }, [countries, drugs]);
 
     return (
         <Box>
