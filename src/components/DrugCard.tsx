@@ -9,7 +9,7 @@ import {
     CardHeader,
     Chip,
     CircularProgress,
-    Fade, IconButton,
+    Fade, IconButton, Tooltip,
     Typography
 } from '@mui/material';
 import JoinInnerIcon from '@mui/icons-material/JoinInner';
@@ -117,13 +117,18 @@ const DrugCard: React.FC<Props> = (props: Props) => {
                         <Fade in={btnVisible}>
                             <Box>
                                 {editMode &&
-                                    <IconButton onClick={() => setEditMode(!editMode)}>
-                                        <CheckIcon fontSize={'small'} />
-                                    </IconButton>
+                                    <Tooltip title={'Save'}>
+                                        <IconButton onClick={() => setEditMode(!editMode)}>
+                                            <CheckIcon fontSize={'small'} />
+                                        </IconButton>
+                                    </Tooltip>
                                 }
-                                <IconButton onClick={() => setEditMode(!editMode)}>
-                                    {editMode ? <CloseIcon fontSize={'small'} /> : <ModeEditIcon fontSize={'small'} />}
-                                </IconButton>
+                                <Tooltip title={editMode ? 'Cancel' : 'Edit'}>
+                                    <IconButton onClick={() => setEditMode(!editMode)}>
+                                        {editMode ? <CloseIcon fontSize={'small'} /> : <ModeEditIcon
+                                            fontSize={'small'} />}
+                                    </IconButton>
+                                </Tooltip>
                             </Box>
                         </Fade>
                     }
@@ -144,9 +149,13 @@ const DrugCard: React.FC<Props> = (props: Props) => {
                         clickable
                     />}
                     <Fade in={btnVisible}>
-                        <IconButton style={{ marginLeft: 'auto' }} onClick={() => {}}>
-                            <JoinInnerIcon fontSize={'small'} />
-                        </IconButton>
+                        <Box style={{ marginLeft: 'auto' }}>
+                            <Tooltip title={'Similar'}>
+                                <IconButton>
+                                    <JoinInnerIcon fontSize={'small'} />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
                     </Fade>
                 </CardActions>
             </Card>

@@ -12,7 +12,7 @@ import {
     Skeleton,
     Tab,
     Tabs,
-    Toolbar,
+    Toolbar, Tooltip,
     Typography,
     useScrollTrigger
 } from '@mui/material';
@@ -186,14 +186,19 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
         // TODO: create card locally with empty fields
     };
 
+    // TODO: show count of selected drugs
     const button = selectedDrugs.length ? (
-        <IconButton size="small" onClick={handleSelectCancellation}>
-            <CloseIcon />
-        </IconButton>
+        <Tooltip title={'Clear selection'}>
+            <IconButton size="small" onClick={handleSelectCancellation}>
+                <CloseIcon />
+            </IconButton>
+        </Tooltip>
     ) : (
-        <IconButton disabled size="small" onClick={handleCreate}>
-            <AddIcon />
-        </IconButton>
+        <Tooltip title={'Add'}>
+            <IconButton disabled size="small" onClick={handleCreate}>
+                <AddIcon />
+            </IconButton>
+        </Tooltip>
     );
 
     return (
@@ -206,30 +211,38 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
                         <ChipList loading={loading} error={error} countries={countries} />
                         <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                             <Box sx={{ mr: 3 }}>
-                                <IconButton size="small" onClick={handleRefresh}>
-                                    <RefreshIcon />
-                                </IconButton>
+                                <Tooltip title={'Refresh'}>
+                                    <IconButton size="small" onClick={handleRefresh}>
+                                        <RefreshIcon />
+                                    </IconButton>
+                                </Tooltip>
                                 {button}
                                 {!!selectedDrugs.length &&
-                                    <IconButton disabled size="small" onClick={handleDelete}>
-                                        <DeleteOutlinedIcon />
-                                    </IconButton>
+                                    <Tooltip title={'Delete selection'}>
+                                        <IconButton disabled size="small" onClick={handleDelete}>
+                                            <DeleteOutlinedIcon />
+                                        </IconButton>
+                                    </Tooltip>
                                 }
                             </Box>
                             <Box sx={{ mr: 3 }}>
-                                <Checkbox
-                                    disabled
-                                    size={'small'}
-                                    icon={<EditOffOutlinedIcon />}
-                                    checkedIcon={<EditOffIcon />}
-                                />
-                                <Checkbox
-                                    size={'small'}
-                                    icon={<DarkModeOutlinedIcon />}
-                                    checkedIcon={<LightModeIcon />}
-                                    checked={mode === 'dark'}
-                                    onChange={handleThemeModeChange}
-                                />
+                                <Tooltip title={'Readonly'}>
+                                    <Checkbox
+                                        disabled
+                                        size={'small'}
+                                        icon={<EditOffOutlinedIcon />}
+                                        checkedIcon={<EditOffIcon />}
+                                    />
+                                </Tooltip>
+                                <Tooltip title={`${mode === 'light' ? 'Dark' : 'Light'} mode`}>
+                                    <Checkbox
+                                        size={'small'}
+                                        icon={<DarkModeOutlinedIcon />}
+                                        checkedIcon={<LightModeIcon />}
+                                        checked={mode === 'dark'}
+                                        onChange={handleThemeModeChange}
+                                    />
+                                </Tooltip>
                             </Box>
                         </Box>
                     </Toolbar>
