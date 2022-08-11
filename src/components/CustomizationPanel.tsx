@@ -3,7 +3,7 @@ import {
     AppBar,
     Box,
     Checkbox,
-    Chip,
+    Chip, Container,
     CssBaseline,
     Fab,
     Fade,
@@ -192,23 +192,6 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
     };
 
     // TODO: show count of selected drugs
-    const button = selectedDrugsIsEmpty ? (
-        <Tooltip title={'Add'}>
-            <span className="disabled">
-                <IconButton disabled size="small" onClick={handleCreate}>
-                    <AddIcon />
-                </IconButton>
-            </span>
-        </Tooltip>
-    ) : (
-        <span className="disabled">
-            <Tooltip title={'Clear selection'}>
-                <IconButton size="small" onClick={handleSelectCancellation}>
-                    <CloseIcon />
-                </IconButton>
-            </Tooltip>
-        </span>
-    );
 
     return (
         <>
@@ -218,34 +201,41 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
                     <Toolbar>
                         <Typography variant="h6" sx={{ marginRight: 1 }}>Drugstore</Typography>
                         <ChipList loading={loading} error={error} countries={countries} />
-                        <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                            <Box sx={{ mr: 3 }}>
+                        <Box sx={{ ml: 1, display: 'flex' }}>
+                            <Box sx={{ mr: 3, display: 'flex' }}>
                                 <Tooltip title={'Refresh'}>
-                                    <IconButton size="small" onClick={handleRefresh}>
+                                    <IconButton onClick={handleRefresh}>
                                         <RefreshIcon />
                                     </IconButton>
                                 </Tooltip>
-                                {button}
+                                {selectedDrugsIsEmpty ? (
+                                    <Tooltip title={'Add'}>
+                                        <IconButton onClick={handleCreate}>
+                                            <AddIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                ) : (
+                                    <Tooltip title={'Clear selection'}>
+                                        <IconButton onClick={handleSelectCancellation}>
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
                                 {!selectedDrugsIsEmpty &&
                                     <Tooltip title={'Delete selection'}>
-                                        <span className="disabled">
-                                            <IconButton disabled size="small" onClick={handleDelete}>
-                                                <DeleteOutlinedIcon />
-                                            </IconButton>
-                                        </span>
+                                        <IconButton onClick={handleDelete}>
+                                            <DeleteOutlinedIcon />
+                                        </IconButton>
                                     </Tooltip>
                                 }
                             </Box>
-                            <Box sx={{ mr: 3 }}>
+                            <Box sx={{ mr: 3, display: 'flex' }}>
                                 <Tooltip title={'Readonly'}>
-                                    <span className="disabled">
-                                        <Checkbox
-                                            disabled
-                                            size={'small'}
-                                            icon={<EditOffOutlinedIcon />}
-                                            checkedIcon={<EditOffIcon />}
-                                        />
-                                    </span>
+                                    <Checkbox
+                                        size={'small'}
+                                        icon={<EditOffOutlinedIcon />}
+                                        checkedIcon={<EditOffIcon />}
+                                    />
                                 </Tooltip>
                                 <Tooltip title={`${mode === 'light' ? 'Dark' : 'Light'} mode`}>
                                     <Checkbox
@@ -264,9 +254,11 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
             </ElevationScroll>
             <Toolbar id="back-to-top-anchor" />
             <ScrollTop>
-                <Fab size="small">
-                    <KeyboardArrowUpIcon />
-                </Fab>
+                <Tooltip title={'Scroll to top'}>
+                    <Fab size="small">
+                        <KeyboardArrowUpIcon />
+                    </Fab>
+                </Tooltip>
             </ScrollTop>
         </>
     );
