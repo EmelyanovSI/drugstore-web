@@ -4,7 +4,7 @@ Drugstore web app
 
 ## WEB Info
 
-Primary address: [drugstore-web.herokuapp.com](http://drugstore-web.herokuapp.com)
+Primary address: [drugstore-web.herokuapp.com](https://drugstore-web.herokuapp.com)
 
 ***
 
