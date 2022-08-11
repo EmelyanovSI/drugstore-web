@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const { REACT_APP_BASE_URI } = process.env;
+
 export default axios.create({
-    baseURL: 'https://drugstore-api-express.herokuapp.com'
+    baseURL: REACT_APP_BASE_URI
 });
