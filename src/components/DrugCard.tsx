@@ -22,7 +22,12 @@ import { Country } from '../interfaces/countries.interface';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { getCountryById } from '../services/countries.service';
 import { correctName } from '../utils';
-import { selectDrug, unselectDrug } from '../redux/appSlice';
+import {
+    selectDrug,
+    selectIsDrugSelected,
+    selectSelectedDrugsIsEmpty,
+    unselectDrug
+} from '../redux/appSlice';
 
 type Props = {
     drug: Drug,
@@ -38,14 +43,14 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         composition,
         cost
     } = props.drug;
-    const selectedDrugs: Array<Drug> = useAppSelector(state => state.appReducer.selectedDrugs);
-    const isSelected = () => !!selectedDrugs.find(({ _id }) => _id === drugId);
+    const isSelected = useAppSelector(selectIsDrugSelected(drugId));
+    const selectedDrugsIsEmpty = useAppSelector(selectSelectedDrugsIsEmpty);
     const [country, setCountry] = useState<Country | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [btnVisible, setBtnVisible] = useState(false);
     const [showCheck, setShowCheck] = useState(false);
-    const [checked, setChecked] = useState<boolean>(isSelected());
+    const [checked, setChecked] = useState(isSelected);
     const [editMode, setEditMode] = useState(false);
 
     useEffect(() => {
@@ -62,34 +67,37 @@ const DrugCard: React.FC<Props> = (props: Props) => {
     }, [dispatch, countryId]);
 
     useEffect(() => {
-        setChecked(isSelected());
-    }, [selectedDrugs]);
+        setChecked(isSelected);
+    }, [isSelected]);
 
-    const badgeIcon = checked
-        ? <CloseIcon
-            cursor={'pointer'}
-            fontSize={'inherit'}
-            onClick={() => {
-                setChecked(false);
-                dispatch(unselectDrug(props.drug));
-            }}
-        />
-        : <CheckIcon
-            cursor={'pointer'}
-            fontSize={'inherit'}
-            onClick={() => {
-                setChecked(true);
-                dispatch(selectDrug(props.drug));
-            }}
-        />;
     const badgeContent = (
         <Box
             onMouseOver={() => setShowCheck(true)}
             onMouseOut={() => setShowCheck(false)}
         >
-            {showCheck ? badgeIcon : props.number}
+            {showCheck ? (
+                <Tooltip title={checked ? 'Unselect' : 'Select'}>
+                    <Box>{checked
+                        ? <CloseIcon cursor={'pointer'} fontSize={'inherit'} />
+                        : <CheckIcon cursor={'pointer'} fontSize={'inherit'} />
+                    }</Box>
+                </Tooltip>
+            ) : props.number}
         </Box>
     );
+
+    const handleBadgeClick = () => {
+        if (!showCheck && selectedDrugsIsEmpty) {
+            return;
+        }
+        if (checked) {
+            setChecked(false);
+            dispatch(unselectDrug(props.drug));
+        } else {
+            setChecked(true);
+            dispatch(selectDrug(props.drug));
+        }
+    };
 
     return (
         <Badge
@@ -99,6 +107,7 @@ const DrugCard: React.FC<Props> = (props: Props) => {
             color={'success'}
             onMouseOver={() => setBtnVisible(true)}
             onMouseOut={() => setBtnVisible(false)}
+            onClick={handleBadgeClick}
             showZero
         >
             <Card

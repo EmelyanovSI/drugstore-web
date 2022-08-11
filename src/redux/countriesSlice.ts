@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { FulfilledAction, RejectedAction } from './store';
+import { FulfilledAction, RejectedAction, RootState } from './store';
 import { Country } from '../interfaces/countries.interface';
 import { getCountries } from '../services/countries.service';
 
@@ -39,6 +39,9 @@ export const countriesSlice = createSlice({
             }
         )
 });
+
+export const selectCountriesCount = (state: RootState) => state.countriesReducer.countries.length;
+export const selectCountriesIsEmpty = (state: RootState) => !state.countriesReducer.countries.length;
 
 export const fetchCountries = createAsyncThunk('drugs/fetchCountries', async () => {
     const response = await getCountries();

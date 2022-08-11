@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { FulfilledAction, RejectedAction } from './store';
+import { FulfilledAction, RejectedAction, RootState } from './store';
 import { Drug } from '../interfaces/drugs.interface';
 import { getDrugs, getDrugsByCountry } from '../services/drugs.service';
 
@@ -50,6 +50,9 @@ export const drugsSlice = createSlice({
             }
         )
 });
+
+export const selectDrugsCount = (state: RootState) => state.drugsReducer.drugs.length;
+export const selectDrugsIsEmpty = (state: RootState) => !state.drugsReducer.drugs.length;
 
 export const fetchDrugs = createAsyncThunk('drugs/fetchDrugs', async () => {
     const response = await getDrugs();

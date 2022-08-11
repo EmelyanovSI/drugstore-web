@@ -3,10 +3,11 @@ import { Alert, AlertTitle, Grid, Skeleton, Stack } from '@mui/material';
 
 import DrugCard from '../components/DrugCard';
 import { Drug } from '../interfaces/drugs.interface';
-import { DrugsState } from '../redux/drugsSlice';
+import { DrugsState, selectDrugsIsEmpty } from '../redux/drugsSlice';
 import { useAppSelector } from '../redux/store';
 
 const CardList: React.FC<DrugsState> = ({ loading, error, drugs }: DrugsState) => {
+    const drugsIsEmpty = useAppSelector(selectDrugsIsEmpty);
     const drugsSkeletonCount = useAppSelector(state => state.appReducer.drugsSkeletonCount);
     if (loading) {
         return (
@@ -36,7 +37,7 @@ const CardList: React.FC<DrugsState> = ({ loading, error, drugs }: DrugsState) =
         );
     }
 
-    if (!drugs.length) {
+    if (drugsIsEmpty) {
         return (
             <Grid padding={2}>
                 <Alert severity="warning">

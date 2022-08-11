@@ -2,10 +2,11 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { Drug } from '../interfaces/drugs.interface';
 import { Country } from '../interfaces/countries.interface';
+import { RootState } from './store';
 
 export interface AppState {
     selectedDrugs: Array<Drug>;
-    selectedCountry: Country | null;
+    selectedCountry?: Country | null;
     countriesSkeletonCount: number;
     drugsSkeletonCount: number;
 }
@@ -41,6 +42,12 @@ export const appSlice = createSlice({
         }
     }
 });
+
+export const selectSelectedDrugsCount = (state: RootState) => state.appReducer.selectedDrugs.length;
+export const selectSelectedDrugsIsEmpty = (state: RootState) => !state.appReducer.selectedDrugs.length;
+export const selectIsDrugSelected = (drugId?: string) => (state: RootState) => (
+    !!state.appReducer.selectedDrugs.find(({ _id }: Drug) => _id === drugId)
+);
 
 export const {
     selectDrug,

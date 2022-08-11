@@ -28,10 +28,14 @@ import EditOffIcon from '@mui/icons-material/EditOff';
 import EditOffOutlinedIcon from '@mui/icons-material/EditOffOutlined';
 
 import { useAppDispatch, useAppSelector } from '../redux/store';
-import { CountriesState, fetchCountries } from '../redux/countriesSlice';
+import { CountriesState, fetchCountries, selectCountriesIsEmpty } from '../redux/countriesSlice';
 import { toggleTheme } from '../redux/themeSlice';
 import headerTheme from '../theme/headerTheme';
-import { clearDrugSelection, selectCountry } from '../redux/appSlice';
+import {
+    clearDrugSelection,
+    selectCountry,
+    selectSelectedDrugsIsEmpty
+} from '../redux/appSlice';
 import { Country } from '../interfaces/countries.interface';
 import { fetchDrugs, fetchDrugsByCountry } from '../redux/drugsSlice';
 
@@ -83,6 +87,7 @@ const ChipList: React.FC<CountriesState> = ({ loading, error, countries }: Count
     const dispatch = useAppDispatch();
     const selectedCountry = useAppSelector(state => state.appReducer.selectedCountry);
     const countriesSkeletonCount = useAppSelector(state => state.appReducer.countriesSkeletonCount);
+    const countriesIsEmpty = useAppSelector(selectCountriesIsEmpty);
 
     const handleSelect = (country: Country | null) => {
         dispatch(selectCountry(country));
@@ -127,7 +132,7 @@ const ChipList: React.FC<CountriesState> = ({ loading, error, countries }: Count
         );
     }
 
-    if (!countries.length) {
+    if (countriesIsEmpty) {
         return (
             <Tabs sx={{ flexGrow: 1 }}>
                 {allChip}
@@ -163,7 +168,7 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
     const dispatch = useAppDispatch();
     const mode = useAppSelector(state => state.themeReducer.mode);
     const selectedCountry = useAppSelector(state => state.appReducer.selectedCountry);
-    const selectedDrugs = useAppSelector(state => state.appReducer.selectedDrugs);
+    const selectedDrugsIsEmpty = useAppSelector(selectSelectedDrugsIsEmpty);
 
     const handleThemeModeChange = () => {
         dispatch(toggleTheme());
@@ -187,18 +192,22 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
     };
 
     // TODO: show count of selected drugs
-    const button = selectedDrugs.length ? (
-        <Tooltip title={'Clear selection'}>
-            <IconButton size="small" onClick={handleSelectCancellation}>
-                <CloseIcon />
-            </IconButton>
+    const button = selectedDrugsIsEmpty ? (
+        <Tooltip title={'Add'}>
+            <span className="disabled">
+                <IconButton disabled size="small" onClick={handleCreate}>
+                    <AddIcon />
+                </IconButton>
+            </span>
         </Tooltip>
     ) : (
-        <Tooltip title={'Add'}>
-            <IconButton disabled size="small" onClick={handleCreate}>
-                <AddIcon />
-            </IconButton>
-        </Tooltip>
+        <span className="disabled">
+            <Tooltip title={'Clear selection'}>
+                <IconButton size="small" onClick={handleSelectCancellation}>
+                    <CloseIcon />
+                </IconButton>
+            </Tooltip>
+        </span>
     );
 
     return (
@@ -217,22 +226,26 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
                                     </IconButton>
                                 </Tooltip>
                                 {button}
-                                {!!selectedDrugs.length &&
+                                {!selectedDrugsIsEmpty &&
                                     <Tooltip title={'Delete selection'}>
-                                        <IconButton disabled size="small" onClick={handleDelete}>
-                                            <DeleteOutlinedIcon />
-                                        </IconButton>
+                                        <span className="disabled">
+                                            <IconButton disabled size="small" onClick={handleDelete}>
+                                                <DeleteOutlinedIcon />
+                                            </IconButton>
+                                        </span>
                                     </Tooltip>
                                 }
                             </Box>
                             <Box sx={{ mr: 3 }}>
                                 <Tooltip title={'Readonly'}>
-                                    <Checkbox
-                                        disabled
-                                        size={'small'}
-                                        icon={<EditOffOutlinedIcon />}
-                                        checkedIcon={<EditOffIcon />}
-                                    />
+                                    <span className="disabled">
+                                        <Checkbox
+                                            disabled
+                                            size={'small'}
+                                            icon={<EditOffOutlinedIcon />}
+                                            checkedIcon={<EditOffIcon />}
+                                        />
+                                    </span>
                                 </Tooltip>
                                 <Tooltip title={`${mode === 'light' ? 'Dark' : 'Light'} mode`}>
                                     <Checkbox
