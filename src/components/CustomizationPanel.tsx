@@ -1,15 +1,15 @@
 import React from 'react';
 import {
-    AppBar,
+    AppBar, Badge,
     Box,
     Checkbox,
-    Chip, Container,
+    Chip,
     CssBaseline,
     Fab,
     Fade,
     IconButton,
     LinearProgress,
-    Skeleton,
+    Skeleton, Stack,
     Tab,
     Tabs,
     Toolbar, Tooltip,
@@ -33,7 +33,7 @@ import { toggleTheme } from '../redux/themeSlice';
 import headerTheme from '../theme/headerTheme';
 import {
     clearDrugSelection,
-    selectCountry,
+    selectCountry, selectSelectedDrugsCount,
     selectSelectedDrugsIsEmpty
 } from '../redux/appSlice';
 import { Country } from '../interfaces/countries.interface';
@@ -169,6 +169,7 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
     const mode = useAppSelector(state => state.themeReducer.mode);
     const selectedCountry = useAppSelector(state => state.appReducer.selectedCountry);
     const selectedDrugsIsEmpty = useAppSelector(selectSelectedDrugsIsEmpty);
+    const selectedDrugsCount = useAppSelector(selectSelectedDrugsCount);
 
     const handleThemeModeChange = () => {
         dispatch(toggleTheme());
@@ -199,10 +200,10 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
             <ElevationScroll>
                 <AppBar color={'inherit'}>
                     <Toolbar>
-                        <Typography variant="h6" sx={{ marginRight: 1 }}>Drugstore</Typography>
+                        <Typography variant="h6" sx={{ mr: 1 }}>Drugstore</Typography>
                         <ChipList loading={loading} error={error} countries={countries} />
-                        <Box sx={{ ml: 1, display: 'flex' }}>
-                            <Box sx={{ mr: 3, display: 'flex' }}>
+                        <Stack direction="row" spacing={3} sx={{ ml: 1, display: 'flex' }}>
+                            <Box sx={{ display: 'flex' }}>
                                 <Tooltip title={'Refresh'}>
                                     <IconButton onClick={handleRefresh}>
                                         <RefreshIcon />
@@ -217,7 +218,9 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
                                 ) : (
                                     <Tooltip title={'Clear selection'}>
                                         <IconButton onClick={handleSelectCancellation}>
-                                            <CloseIcon />
+                                            <Badge badgeContent={selectedDrugsCount} color={'success'}>
+                                                <CloseIcon />
+                                            </Badge>
                                         </IconButton>
                                     </Tooltip>
                                 )}
@@ -229,7 +232,7 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
                                     </Tooltip>
                                 }
                             </Box>
-                            <Box sx={{ mr: 3, display: 'flex' }}>
+                            <Box sx={{ display: 'flex' }}>
                                 <Tooltip title={'Readonly'}>
                                     <Checkbox
                                         size={'small'}
@@ -247,7 +250,7 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
                                     />
                                 </Tooltip>
                             </Box>
-                        </Box>
+                        </Stack>
                     </Toolbar>
                     {loadingDrugs ? <LinearProgress color={'success'} /> : null}
                 </AppBar>
