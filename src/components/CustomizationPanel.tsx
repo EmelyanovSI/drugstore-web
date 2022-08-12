@@ -1,18 +1,22 @@
 import React from 'react';
 import {
-    AppBar, Badge,
+    AppBar,
+    Badge,
     Box,
     Checkbox,
     Chip,
     CssBaseline,
+    Divider,
     Fab,
     Fade,
     IconButton,
     LinearProgress,
-    Skeleton, Stack,
+    Skeleton,
+    Stack,
     Tab,
     Tabs,
-    Toolbar, Tooltip,
+    Toolbar,
+    Tooltip,
     Typography,
     useScrollTrigger
 } from '@mui/material';
@@ -109,7 +113,7 @@ const ChipList: React.FC<CountriesState> = ({ loading, error, countries }: Count
 
     if (loading) {
         return (
-            <Tabs sx={{ flexGrow: 1 }}>
+            <Tabs>
                 {allChip}
                 {Array.from(Array(countriesSkeletonCount).keys()).map((value) => (
                     <Tab key={value} label={
@@ -126,7 +130,7 @@ const ChipList: React.FC<CountriesState> = ({ loading, error, countries }: Count
 
     if (error) {
         return (
-            <Tabs sx={{ flexGrow: 1 }}>
+            <Tabs>
                 {allChip}
             </Tabs>
         );
@@ -134,14 +138,14 @@ const ChipList: React.FC<CountriesState> = ({ loading, error, countries }: Count
 
     if (countriesIsEmpty) {
         return (
-            <Tabs sx={{ flexGrow: 1 }}>
+            <Tabs>
                 {allChip}
             </Tabs>
         );
     }
 
     return (
-        <Tabs sx={{ flexGrow: 1 }}>
+        <Tabs>
             {allChip}
             {countries.map((value, index) => (
                 <Tab key={index} label={
@@ -202,7 +206,21 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
                     <Toolbar>
                         <Typography variant="h6" sx={{ mr: 1 }}>Drugstore</Typography>
                         <ChipList loading={loading} error={error} countries={countries} />
-                        <Stack direction="row" spacing={3} sx={{ ml: 1, display: 'flex' }}>
+                        <Divider orientation="vertical" variant={'middle'} flexItem />
+                        <Box sx={{ flexGrow: 1 }}>
+                            <Tab label={
+                                <Chip
+                                    label="Similar"
+                                    variant="outlined"
+                                    size={'small'}
+                                    clickable
+                                    disabled={true}
+                                    onClick={() => {}}
+                                    onDelete={undefined}
+                                />
+                            } />
+                        </Box>
+                        <Stack direction="row" spacing={3} sx={{ ml: 1 }}>
                             <Box sx={{ display: 'flex' }}>
                                 <Tooltip title={'Refresh'}>
                                     <IconButton onClick={handleRefresh}>
