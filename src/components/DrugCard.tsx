@@ -7,15 +7,19 @@ import {
     CardActions,
     CardContent,
     CardHeader,
+    Checkbox,
     Chip,
     CircularProgress,
-    Fade, IconButton, Tooltip,
+    Fade,
+    IconButton,
+    Tooltip,
     Typography
 } from '@mui/material';
 import JoinInnerIcon from '@mui/icons-material/JoinInner';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import { Favorite, FavoriteBorder } from '@mui/icons-material';
 
 import { Drug } from '../interfaces/drugs.interface';
 import { Country } from '../interfaces/countries.interface';
@@ -163,6 +167,9 @@ const DrugCard: React.FC<Props> = (props: Props) => {
                                 <IconButton>
                                     <JoinInnerIcon fontSize={'small'} />
                                 </IconButton>
+                            </Tooltip>
+                            <Tooltip title={'Favorite'}>
+                                <Checkbox size={'small'} icon={<FavoriteBorder />} checkedIcon={<Favorite />} />
                             </Tooltip>
                         </Box>
                     </Fade>

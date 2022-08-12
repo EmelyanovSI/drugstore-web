@@ -30,6 +30,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditOffIcon from '@mui/icons-material/EditOff';
 import EditOffOutlinedIcon from '@mui/icons-material/EditOffOutlined';
+import { Favorite, FavoriteBorder } from '@mui/icons-material';
 
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { CountriesState, fetchCountries, selectCountriesIsEmpty } from '../redux/countriesSlice';
@@ -207,7 +208,7 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
                         <Typography variant="h6" sx={{ mr: 1 }}>Drugstore</Typography>
                         <ChipList loading={loading} error={error} countries={countries} />
                         <Divider orientation="vertical" variant={'middle'} flexItem />
-                        <Box sx={{ flexGrow: 1 }}>
+                        <Stack direction="row" sx={{ flexGrow: 1 }}>
                             <Tab label={
                                 <Chip
                                     label="Similar"
@@ -219,7 +220,18 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
                                     onDelete={undefined}
                                 />
                             } />
-                        </Box>
+                            <Tab label={
+                                <Chip
+                                    label="Favorite"
+                                    variant="outlined"
+                                    size={'small'}
+                                    clickable
+                                    disabled={true}
+                                    onClick={() => {}}
+                                    onDelete={undefined}
+                                />
+                            } />
+                        </Stack>
                         <Stack direction="row" spacing={3} sx={{ ml: 1 }}>
                             <Box sx={{ display: 'flex' }}>
                                 <Tooltip title={'Refresh'}>
@@ -258,6 +270,13 @@ const CustomizationPanel: React.FC<Props> = ({ loading, error, countries, loadin
                                         checkedIcon={<EditOffIcon />}
                                     />
                                 </Tooltip>
+                                {!selectedDrugsIsEmpty &&
+                                    <Tooltip title={'Favorite'}>
+                                        <Checkbox size={'small'} icon={<FavoriteBorder />} checkedIcon={<Favorite />} />
+                                    </Tooltip>
+                                }
+                            </Box>
+                            <Box sx={{ display: 'flex' }}>
                                 <Tooltip title={`${mode === 'light' ? 'Dark' : 'Light'} mode`}>
                                     <Checkbox
                                         size={'small'}
