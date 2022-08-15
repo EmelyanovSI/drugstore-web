@@ -27,10 +27,13 @@ import { useAppDispatch, useAppSelector } from '../redux/store';
 import { getCountryById } from '../services/countries.service';
 import { correctName } from '../utils';
 import {
-    selectDrug,
+    addDrugToFavorite,
+    removeDrugFromFavorite,
+    markDrugAsSelected,
+    selectIsDrugFavorite,
     selectIsDrugSelected,
     selectSelectedDrugsIsEmpty,
-    unselectDrug
+    markDrugAsDeselected
 } from '../redux/appSlice';
 
 type Props = {
@@ -48,6 +51,7 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         cost
     } = props.drug;
     const isSelected = useAppSelector(selectIsDrugSelected(drugId));
+    const isFavorite = useAppSelector(selectIsDrugFavorite(drugId));
     const selectedDrugsIsEmpty = useAppSelector(selectSelectedDrugsIsEmpty);
     const [country, setCountry] = useState<Country | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -74,41 +78,47 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         setChecked(isSelected);
     }, [isSelected]);
 
-    const badgeContent = (
-        <Box
-            onMouseOver={() => setShowCheck(true)}
-            onMouseOut={() => setShowCheck(false)}
-        >
-            {showCheck ? (
-                <Tooltip title={checked ? 'Unselect' : 'Select'}>
-                    <Box>{checked
-                        ? <CloseIcon cursor={'pointer'} fontSize={'inherit'} />
-                        : <CheckIcon cursor={'pointer'} fontSize={'inherit'} />
-                    }</Box>
-                </Tooltip>
-            ) : props.number}
-        </Box>
-    );
-
     const handleBadgeClick = () => {
         if (!showCheck && selectedDrugsIsEmpty) {
             return;
         }
         if (checked) {
             setChecked(false);
-            dispatch(unselectDrug(props.drug));
+            dispatch(markDrugAsDeselected(drugId));
         } else {
             setChecked(true);
-            dispatch(selectDrug(props.drug));
+            dispatch(markDrugAsSelected(drugId));
         }
     };
+
+    const handleFavoriteClick = () => {
+        isFavorite
+            ? dispatch(removeDrugFromFavorite(drugId))
+            : dispatch(addDrugToFavorite(drugId));
+    };
+
+    const badgeContent = (
+        <Box
+            onMouseOver={() => setShowCheck(true)}
+            onMouseOut={() => setShowCheck(false)}
+        >
+            {showCheck ? (
+                <Tooltip title={checked ? 'Deselect' : 'Select'}>
+                    <Box>{checked
+                        ? <CloseIcon cursor="pointer" fontSize="inherit" />
+                        : <CheckIcon cursor="pointer" fontSize="inherit" />
+                    }</Box>
+                </Tooltip>
+            ) : props.number}
+        </Box>
+    );
 
     return (
         <Badge
             badgeContent={badgeContent}
             anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
             invisible={!btnVisible && !checked}
-            color={'success'}
+            color="success"
             onMouseOver={() => setBtnVisible(true)}
             onMouseOut={() => setBtnVisible(false)}
             onClick={handleBadgeClick}
@@ -130,16 +140,16 @@ const DrugCard: React.FC<Props> = (props: Props) => {
                         <Fade in={btnVisible}>
                             <Box>
                                 {editMode &&
-                                    <Tooltip title={'Save'}>
+                                    <Tooltip title="Save">
                                         <IconButton onClick={() => setEditMode(!editMode)}>
-                                            <CheckIcon fontSize={'small'} />
+                                            <CheckIcon fontSize="small" />
                                         </IconButton>
                                     </Tooltip>
                                 }
                                 <Tooltip title={editMode ? 'Cancel' : 'Edit'}>
                                     <IconButton onClick={() => setEditMode(!editMode)}>
-                                        {editMode ? <CloseIcon fontSize={'small'} /> : <ModeEditIcon
-                                            fontSize={'small'} />}
+                                        {editMode ? <CloseIcon fontSize="small" /> : <ModeEditIcon
+                                            fontSize="small" />}
                                     </IconButton>
                                 </Tooltip>
                             </Box>
@@ -148,28 +158,37 @@ const DrugCard: React.FC<Props> = (props: Props) => {
                 />
                 <CardContent>~ ${cost || '10'}</CardContent>
                 <CardActions>
-                    {loading && <CircularProgress size={20} color={'success'} />}
+                    {loading && <CircularProgress size={20} color="success" />}
                     {error && (
                         <Alert variant="outlined" severity="error">
                             Country not found
                         </Alert>
                     )}
-                    {country && <Chip
-                        label={country.name}
-                        size={'small'}
-                        variant={'outlined'}
-                        color={'success'}
-                        clickable
-                    />}
+                    {country && (
+                        <Chip
+                            label={country.name}
+                            size="small"
+                            variant="outlined"
+                            color="success"
+                            clickable
+                        />
+                    )}
                     <Fade in={btnVisible}>
                         <Box style={{ marginLeft: 'auto' }}>
-                            <Tooltip title={'Similar'}>
+                            <Tooltip title="Similar">
                                 <IconButton>
-                                    <JoinInnerIcon fontSize={'small'} />
+                                    <JoinInnerIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
-                            <Tooltip title={'Favorite'}>
-                                <Checkbox size={'small'} icon={<FavoriteBorder />} checkedIcon={<Favorite />} />
+                            <Tooltip title="Favorite">
+                                <Checkbox
+                                    color="error"
+                                    size="small"
+                                    icon={<FavoriteBorder />}
+                                    checkedIcon={<Favorite />}
+                                    checked={isFavorite}
+                                    onClick={handleFavoriteClick}
+                                />
                             </Tooltip>
                         </Box>
                     </Fade>

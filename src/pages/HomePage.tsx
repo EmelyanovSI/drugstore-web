@@ -2,11 +2,18 @@ import React, { useEffect } from 'react';
 import { Alert, Box, Snackbar } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../redux/store';
-import { fetchDrugs, fetchDrugsByCountry, selectDrugsCount, selectDrugsIsEmpty } from '../redux/drugsSlice';
+import {
+    fetchDrugs,
+    fetchDrugsByCountry,
+    fetchDrugsByIds,
+    selectDrugsCount,
+    selectDrugsIsEmpty
+} from '../redux/drugsSlice';
 import { fetchCountries, selectCountriesCount, selectCountriesIsEmpty } from '../redux/countriesSlice';
-import CustomizationPanel from '../components/CustomizationPanel';
-import CardList from '../components/CardList';
-import { updateCountriesSkeletonCount, updateDrugsSkeletonCount } from '../redux/appSlice';
+import { setCountriesCount, setDrugsCount } from '../redux/appSlice';
+import Header from '../containers/Header';
+import CardList from '../containers/CardList';
+import { GroupBy } from '../constants/enum';
 
 const autoHideDuration = 6000;
 
@@ -17,12 +24,10 @@ const HomePage: React.FC = () => {
         error: errorDrugs,
         drugs
     } = useAppSelector(state => state.drugsReducer);
-    const {
-        loading: loadingCountries,
-        error: errorCountries,
-        countries
-    } = useAppSelector(state => state.countriesReducer);
-    const selectedCountry = useAppSelector(state => state.appReducer.selectedCountry);
+    const errorCountries = useAppSelector(state => state.countriesReducer.error);
+    const selectedCountryId = useAppSelector(state => state.appReducer.selectedCountryId);
+    const favoriteDrugsIds = useAppSelector(state => state.appReducer.favoriteDrugsIds);
+    const groupBy = useAppSelector(state => state.appReducer.groupBy);
     const countriesIsEmpty = useAppSelector(selectCountriesIsEmpty);
     const drugsIsEmpty = useAppSelector(selectDrugsIsEmpty);
     const drugsCount = useAppSelector(selectDrugsCount);
@@ -47,22 +52,35 @@ const HomePage: React.FC = () => {
 
     useEffect(() => {
         countriesIsEmpty && dispatch(fetchCountries());
-        selectedCountry ? dispatch(fetchDrugsByCountry(selectedCountry._id)) : dispatch(fetchDrugs());
-    }, [dispatch, countriesIsEmpty, selectedCountry]);
+        switch (groupBy) {
+            case GroupBy.All: {
+                dispatch(fetchDrugs());
+                break;
+            }
+            case GroupBy.Country: {
+                dispatch(fetchDrugsByCountry(selectedCountryId));
+                break;
+            }
+            case GroupBy.Similar: {
+                break;
+            }
+        }
+    }, [dispatch, groupBy, countriesIsEmpty, selectedCountryId]);
 
     useEffect(() => {
-        !drugsIsEmpty && dispatch(updateDrugsSkeletonCount(drugsCount));
-        !countriesIsEmpty && dispatch(updateCountriesSkeletonCount(countriesCount));
+        if (groupBy === GroupBy.Favorite) {
+            dispatch(fetchDrugsByIds(favoriteDrugsIds));
+        }
+    }, [dispatch, groupBy, favoriteDrugsIds]);
+
+    useEffect(() => {
+        !drugsIsEmpty && dispatch(setDrugsCount(drugsCount));
+        !countriesIsEmpty && dispatch(setCountriesCount(countriesCount));
     }, [dispatch, drugsIsEmpty, countriesIsEmpty, drugsCount, countriesCount]);
 
     return (
         <Box>
-            <CustomizationPanel
-                countries={countries}
-                loading={loadingCountries}
-                loadingDrugs={loadingDrugs}
-                error={errorCountries}
-            />
+            <Header loadingDrugs={loadingDrugs} />
             <CardList
                 drugs={drugs}
                 loading={loadingDrugs}

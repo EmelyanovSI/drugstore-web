@@ -8,12 +8,14 @@ import { useAppSelector } from '../redux/store';
 
 const CardList: React.FC<DrugsState> = ({ loading, error, drugs }: DrugsState) => {
     const drugsIsEmpty = useAppSelector(selectDrugsIsEmpty);
-    const drugsSkeletonCount = useAppSelector(state => state.appReducer.drugsSkeletonCount);
+    const drugsCount = useAppSelector(state => state.appReducer.drugsCount);
+    const drugsSkeletonKeys = Array.from(Array(drugsCount).keys());
+
     if (loading) {
         return (
             <Grid container spacing={4} padding={2}>
-                {Array.from(Array(drugsSkeletonCount)).map((_, index) => (
-                    <Grid item key={index}>
+                {drugsSkeletonKeys.map(key => (
+                    <Grid item key={key}>
                         <Stack spacing={1}>
                             <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={210} />
                             <Skeleton variant="circular" width={40} height={40} />

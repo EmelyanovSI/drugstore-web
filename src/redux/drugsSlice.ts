@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { FulfilledAction, RejectedAction, RootState } from './store';
 import { Drug } from '../interfaces/drugs.interface';
-import { getDrugs, getDrugsByCountry } from '../services/drugs.service';
+import { getDrugById, getDrugs, getDrugsByCountry } from '../services/drugs.service';
 
 export interface DrugsState {
     drugs: Array<Drug>;
@@ -38,12 +38,23 @@ export const drugsSlice = createSlice({
         .addCase(fetchDrugsByCountry.rejected, (state, action) => {
             state.error = action.error.message;
         })
+        .addCase(fetchDrugsByIds.pending, (state) => {
+            state.loading = true;
+        })
+        .addCase(fetchDrugsByIds.fulfilled, (state, action) => {
+            state.drugs = action.payload;
+        })
+        .addCase(fetchDrugsByIds.rejected, (state, action) => {
+            state.error = action.error.message;
+        })
         .addMatcher<FulfilledAction | RejectedAction>(
             action => (
                 action.type.endsWith('fetchDrugs/fulfilled') ||
                 action.type.endsWith('fetchDrugs/rejected') ||
                 action.type.endsWith('fetchDrugsByCountry/fulfilled') ||
-                action.type.endsWith('fetchDrugsByCountry/rejected')
+                action.type.endsWith('fetchDrugsByCountry/rejected') ||
+                action.type.endsWith('fetchDrugsByIds/fulfilled') ||
+                action.type.endsWith('fetchDrugsByIds/rejected')
             ),
             state => {
                 state.loading = false;
@@ -62,6 +73,15 @@ export const fetchDrugs = createAsyncThunk('drugs/fetchDrugs', async () => {
 export const fetchDrugsByCountry = createAsyncThunk('drugs/fetchDrugsByCountry', async (countryId: string) => {
     const response = await getDrugsByCountry(countryId);
     return response.data;
+});
+
+export const fetchDrugsByIds = createAsyncThunk('drugs/fetchDrugsByIds', async (drugsIds: Array<string>) => {
+    const drugsByIds = [];
+    for (const id of drugsIds) {
+        const response = await getDrugById(id);
+        drugsByIds.push(response.data);
+    }
+    return drugsByIds;
 });
 
 export default drugsSlice.reducer;
