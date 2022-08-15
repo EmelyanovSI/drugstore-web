@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Badge, Chip, Divider, Stack, Tab } from '@mui/material';
+import { Badge, Divider, Stack, Tab } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { selectFavoriteDrugsCount, selectFavoriteDrugsIsEmpty, setGroupBy } from '../redux/appSlice';
 import ChipList from './ChipList';
-import { CountryChip } from './CountryChip';
+import { CountryChip, SimilarChip } from './CountryChip';
 import { GroupBy } from '../constants/enum';
 
 const ChipNav: React.FC = () => {
@@ -24,18 +24,20 @@ const ChipNav: React.FC = () => {
         }
     };
 
+    const handleSelectSimilar = () => {
+        dispatch(setGroupBy(GroupBy.All));
+    };
+
     return (
         <>
             <ChipList />
             <Divider orientation="vertical" variant="middle" flexItem />
             <Stack direction="row" sx={{ flexGrow: 1 }}>
                 <Tab label={
-                    <Chip
+                    <SimilarChip
                         label="Similar"
-                        variant="outlined"
-                        size="small"
-                        clickable
-                        disabled
+                        checked={groupBy === GroupBy.Similar}
+                        onClick={handleSelectSimilar}
                     />
                 } />
                 <Tab sx={{ pr: 2 }} label={

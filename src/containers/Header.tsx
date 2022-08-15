@@ -35,7 +35,8 @@ import {
     selectIsAnyFavoriteInSelected,
     selectIsAllSelectedAreFavorite,
     selectSelectedDrugsCount,
-    selectSelectedDrugsIsEmpty
+    selectSelectedDrugsIsEmpty,
+    setGroupBy
 } from '../redux/appSlice';
 import { fetchDrugs, fetchDrugsByCountry, fetchDrugsByIds } from '../redux/drugsSlice';
 import ElevationScroll from '../components/ElevationScroll';
@@ -74,6 +75,7 @@ const Header: React.FC<Props> = ({ loadingDrugs }: Props) => {
                 break;
             }
             case GroupBy.Similar: {
+                dispatch(setGroupBy(GroupBy.All));
                 break;
             }
             case GroupBy.Favorite: {

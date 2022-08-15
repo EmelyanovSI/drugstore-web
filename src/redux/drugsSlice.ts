@@ -47,6 +47,15 @@ export const drugsSlice = createSlice({
         .addCase(fetchDrugsByIds.rejected, (state, action) => {
             state.error = action.error.message;
         })
+        .addCase(fetchDrugsByActiveSubstance.pending, (state) => {
+            state.loading = true;
+        })
+        .addCase(fetchDrugsByActiveSubstance.fulfilled, (state, action) => {
+            state.drugs = action.payload.slice(1, 10);
+        })
+        .addCase(fetchDrugsByActiveSubstance.rejected, (state, action) => {
+            state.error = action.error.message;
+        })
         .addMatcher<FulfilledAction | RejectedAction>(
             action => (
                 action.type.endsWith('fetchDrugs/fulfilled') ||
@@ -54,7 +63,9 @@ export const drugsSlice = createSlice({
                 action.type.endsWith('fetchDrugsByCountry/fulfilled') ||
                 action.type.endsWith('fetchDrugsByCountry/rejected') ||
                 action.type.endsWith('fetchDrugsByIds/fulfilled') ||
-                action.type.endsWith('fetchDrugsByIds/rejected')
+                action.type.endsWith('fetchDrugsByIds/rejected') ||
+                action.type.endsWith('fetchDrugsByActiveSubstance/fulfilled') ||
+                action.type.endsWith('fetchDrugsByActiveSubstance/rejected')
             ),
             state => {
                 state.loading = false;
@@ -83,5 +94,13 @@ export const fetchDrugsByIds = createAsyncThunk('drugs/fetchDrugsByIds', async (
     }
     return drugsByIds;
 });
+
+export const fetchDrugsByActiveSubstance = createAsyncThunk(
+    'drugs/fetchDrugsByActiveSubstance',
+    async (activeSubstanceId?: string) => {
+        const response = await getDrugs();
+        return response.data;
+    }
+);
 
 export default drugsSlice.reducer;

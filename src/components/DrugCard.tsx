@@ -25,7 +25,6 @@ import { Drug } from '../interfaces/drugs.interface';
 import { Country } from '../interfaces/countries.interface';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { getCountryById } from '../services/countries.service';
-import { correctName } from '../utils';
 import {
     addDrugToFavorite,
     removeDrugFromFavorite,
@@ -33,8 +32,12 @@ import {
     selectIsDrugFavorite,
     selectIsDrugSelected,
     selectSelectedDrugsIsEmpty,
-    markDrugAsDeselected
+    markDrugAsDeselected,
+    setGroupBy
 } from '../redux/appSlice';
+import { fetchDrugsByActiveSubstance } from '../redux/drugsSlice';
+import { GroupBy } from '../constants/enum';
+import { correctName } from '../utils';
 
 type Props = {
     drug: Drug,
@@ -95,6 +98,12 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         isFavorite
             ? dispatch(removeDrugFromFavorite(drugId))
             : dispatch(addDrugToFavorite(drugId));
+    };
+
+    const handleSimilarClick = () => {
+        const substance = composition.find(substance => substance.activeSubstance);
+        dispatch(setGroupBy(GroupBy.Similar));
+        dispatch(fetchDrugsByActiveSubstance(substance?._id));
     };
 
     const badgeContent = (
@@ -176,7 +185,7 @@ const DrugCard: React.FC<Props> = (props: Props) => {
                     <Fade in={btnVisible}>
                         <Box style={{ marginLeft: 'auto' }}>
                             <Tooltip title="Similar">
-                                <IconButton>
+                                <IconButton onClick={handleSimilarClick}>
                                     <JoinInnerIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>

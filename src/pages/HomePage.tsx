@@ -10,7 +10,7 @@ import {
     selectDrugsIsEmpty
 } from '../redux/drugsSlice';
 import { fetchCountries, selectCountriesCount, selectCountriesIsEmpty } from '../redux/countriesSlice';
-import { setCountriesCount, setDrugsCount } from '../redux/appSlice';
+import { setCountriesCount, setDrugsCount, setGroupBy } from '../redux/appSlice';
 import Header from '../containers/Header';
 import CardList from '../containers/CardList';
 import { GroupBy } from '../constants/enum';
@@ -62,10 +62,11 @@ const HomePage: React.FC = () => {
                 break;
             }
             case GroupBy.Similar: {
+                drugsIsEmpty && dispatch(setGroupBy(GroupBy.All));
                 break;
             }
         }
-    }, [dispatch, groupBy, countriesIsEmpty, selectedCountryId]);
+    }, [dispatch, groupBy, countriesIsEmpty, selectedCountryId, drugsIsEmpty]);
 
     useEffect(() => {
         if (groupBy === GroupBy.Favorite) {

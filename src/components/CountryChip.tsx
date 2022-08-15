@@ -43,3 +43,17 @@ export const CountryChip: React.FC<Props> = (props: Props) => {
         <UncheckedCountryChip {...props} />
     );
 };
+
+export const SimilarChip: React.FC<Props> = (props: Props) => {
+    const { checked, onClick } = props;
+
+    if (checked) {
+        return (
+            <UncheckedCountryChip variant="filled" onDelete={onClick} {...props} />
+        );
+    }
+
+    return (
+        <UncheckedCountryChip disabled {...props} />
+    );
+};
