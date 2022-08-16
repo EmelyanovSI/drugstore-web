@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Badge, Divider, Stack, Tab } from '@mui/material';
 
-import { useAppDispatch, useAppSelector } from '../redux/store';
-import { selectFavoriteDrugsCount, selectFavoriteDrugsIsEmpty, setGroupBy } from '../redux/appSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { selectFavoriteDrugsCount, selectFavoriteDrugsIsEmpty, setGroupBy } from '../../redux/appSlice';
 import ChipList from './ChipList';
 import { CountryChip, SimilarChip } from './CountryChip';
-import { GroupBy } from '../constants/enum';
+import { GroupBy } from '../../constants/enum';
 
 const ChipNav: React.FC = () => {
     const dispatch = useAppDispatch();

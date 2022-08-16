@@ -6,25 +6,22 @@ import {
     Card,
     CardActions,
     CardContent,
-    CardHeader,
     Checkbox,
     Chip,
     CircularProgress,
     Fade,
     IconButton,
-    Tooltip,
-    Typography
+    Tooltip
 } from '@mui/material';
 import JoinInnerIcon from '@mui/icons-material/JoinInner';
-import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { Favorite, FavoriteBorder } from '@mui/icons-material';
 
-import { Drug } from '../interfaces/drugs.interface';
-import { Country } from '../interfaces/countries.interface';
-import { useAppDispatch, useAppSelector } from '../redux/store';
-import { getCountryById } from '../services/countries.service';
+import { Drug } from '../../interfaces/drugs.interface';
+import { Country } from '../../interfaces/countries.interface';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { getCountryById } from '../../services/countries.service';
 import {
     addDrugToFavorite,
     removeDrugFromFavorite,
@@ -34,14 +31,15 @@ import {
     selectSelectedDrugsIsEmpty,
     markDrugAsDeselected,
     setGroupBy
-} from '../redux/appSlice';
-import { fetchDrugsByActiveSubstance } from '../redux/drugsSlice';
-import { GroupBy } from '../constants/enum';
-import { correctName } from '../utils';
+} from '../../redux/appSlice';
+import { fetchDrugsByActiveSubstance } from '../../redux/drugsSlice';
+import { GroupBy } from '../../constants/enum';
+import ActionButtons from './ActionButtons';
+import DrugCardHeader from './DrugCardHeader';
 
-type Props = {
-    drug: Drug,
-    number: number
+interface Props {
+    drug: Drug;
+    number: number;
 }
 
 const DrugCard: React.FC<Props> = (props: Props) => {
@@ -53,6 +51,7 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         composition,
         cost
     } = props.drug;
+    const readonly = useAppSelector(state => state.appReducer.readonly);
     const isSelected = useAppSelector(selectIsDrugSelected(drugId));
     const isFavorite = useAppSelector(selectIsDrugFavorite(drugId));
     const selectedDrugsIsEmpty = useAppSelector(selectSelectedDrugsIsEmpty);
@@ -81,6 +80,10 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         setChecked(isSelected);
     }, [isSelected]);
 
+    useEffect(() => {
+        readonly && setEditMode(false);
+    }, [readonly]);
+
     const handleBadgeClick = () => {
         if (!showCheck && selectedDrugsIsEmpty) {
             return;
@@ -94,16 +97,33 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         }
     };
 
-    const handleFavoriteClick = () => {
+    const handleFavoriteClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        event.stopPropagation();
         isFavorite
             ? dispatch(removeDrugFromFavorite(drugId))
             : dispatch(addDrugToFavorite(drugId));
     };
 
-    const handleSimilarClick = () => {
+    const handleSimilarClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        event.stopPropagation();
         const substance = composition.find(substance => substance.activeSubstance);
         dispatch(setGroupBy(GroupBy.Similar));
         dispatch(fetchDrugsByActiveSubstance(substance?._id));
+    };
+
+    const handleActionEdit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        event.stopPropagation();
+        setEditMode(!editMode);
+    };
+
+    const handleActionSave = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        event.stopPropagation();
+        setEditMode(!editMode);
+    };
+
+    const handleActionCancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        event.stopPropagation();
+        setEditMode(!editMode);
     };
 
     const badgeContent = (
@@ -138,33 +158,18 @@ const DrugCard: React.FC<Props> = (props: Props) => {
                 variant={checked ? 'elevation' : 'outlined'}
                 elevation={checked ? 8 : 0}
             >
-                <CardHeader
-                    title={correctName(drugName)}
-                    subheader={composition.map((value) => (
-                        <Typography key={value._id} variant="body2">
-                            {correctName(value.name)}
-                        </Typography>
-                    ))}
-                    action={
-                        <Fade in={btnVisible}>
-                            <Box>
-                                {editMode &&
-                                    <Tooltip title="Save">
-                                        <IconButton onClick={() => setEditMode(!editMode)}>
-                                            <CheckIcon fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                }
-                                <Tooltip title={editMode ? 'Cancel' : 'Edit'}>
-                                    <IconButton onClick={() => setEditMode(!editMode)}>
-                                        {editMode ? <CloseIcon fontSize="small" /> : <ModeEditIcon
-                                            fontSize="small" />}
-                                    </IconButton>
-                                </Tooltip>
-                            </Box>
-                        </Fade>
-                    }
-                />
+                <DrugCardHeader isEditMode={editMode} drugName={drugName} composition={composition}>
+                    <Fade in={!readonly && (editMode || btnVisible)}>
+                        <Box>
+                            <ActionButtons
+                                editMode={editMode}
+                                onEdit={handleActionEdit}
+                                onSave={handleActionSave}
+                                onCancel={handleActionCancel}
+                            />
+                        </Box>
+                    </Fade>
+                </DrugCardHeader>
                 <CardContent>~ ${cost || '10'}</CardContent>
                 <CardActions>
                     {loading && <CircularProgress size={20} color="success" />}

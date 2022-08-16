@@ -67,6 +67,9 @@ export const appSlice = createSlice({
         },
         setGroupBy(state, action) {
             state.groupBy = action.payload;
+        },
+        toggleReadonly(state) {
+            state.readonly = !state.readonly;
         }
     }
 });
@@ -113,7 +116,8 @@ export const {
     addDrugsToFavorite,
     removeDrugFromFavorite,
     removeDrugsFromFavorite,
-    setGroupBy
+    setGroupBy,
+    toggleReadonly
 } = appSlice.actions;
 
 export default appSlice.reducer;

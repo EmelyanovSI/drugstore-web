@@ -36,12 +36,13 @@ import {
     selectIsAllSelectedAreFavorite,
     selectSelectedDrugsCount,
     selectSelectedDrugsIsEmpty,
-    setGroupBy
+    setGroupBy,
+    toggleReadonly
 } from '../redux/appSlice';
 import { fetchDrugs, fetchDrugsByCountry, fetchDrugsByIds } from '../redux/drugsSlice';
 import ElevationScroll from '../components/ElevationScroll';
 import ScrollTo from '../components/ScrollTo';
-import ChipNav from '../components/ChipNav';
+import ChipNav from '../components/ChipNav/ChipNav';
 import { GroupBy } from '../constants/enum';
 
 interface Props {
@@ -54,6 +55,7 @@ const Header: React.FC<Props> = ({ loadingDrugs }: Props) => {
     const selectedCountryId = useAppSelector(state => state.appReducer.selectedCountryId);
     const favoriteDrugsIds = useAppSelector(state => state.appReducer.favoriteDrugsIds);
     const groupBy = useAppSelector(state => state.appReducer.groupBy);
+    const readonly = useAppSelector(state => state.appReducer.readonly);
     const selectedDrugsIsEmpty = useAppSelector(selectSelectedDrugsIsEmpty);
     const selectedDrugsCount = useAppSelector(selectSelectedDrugsCount);
     const isAnyFavoriteInSelected = useAppSelector(selectIsAnyFavoriteInSelected);
@@ -95,6 +97,10 @@ const Header: React.FC<Props> = ({ loadingDrugs }: Props) => {
         } else {
             dispatch(addDrugsToFavorite());
         }
+    };
+
+    const handleReadonly = () => {
+        dispatch(toggleReadonly());
     };
 
     const handleDelete = () => {
@@ -149,6 +155,8 @@ const Header: React.FC<Props> = ({ loadingDrugs }: Props) => {
                                         size="small"
                                         icon={<EditOffOutlinedIcon />}
                                         checkedIcon={<EditOffIcon />}
+                                        checked={readonly}
+                                        onChange={handleReadonly}
                                     />
                                 </Tooltip>
                                 {!selectedDrugsIsEmpty && (

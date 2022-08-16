@@ -1,7 +1,7 @@
 import React from 'react';
 import { Alert, AlertTitle, Grid, Skeleton, Stack } from '@mui/material';
 
-import DrugCard from '../components/DrugCard';
+import DrugCard from '../components/DrugCard/DrugCard';
 import { Drug } from '../interfaces/drugs.interface';
 import { DrugsState, selectDrugsIsEmpty } from '../redux/drugsSlice';
 import { useAppSelector } from '../redux/store';
