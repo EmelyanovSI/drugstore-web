@@ -17,6 +17,8 @@ import JoinInnerIcon from '@mui/icons-material/JoinInner';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { Favorite, FavoriteBorder } from '@mui/icons-material';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 import { Drug } from '../../interfaces/drugs.interface';
 import { Country } from '../../interfaces/countries.interface';
@@ -142,6 +144,37 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         </Box>
     );
 
+    const nameSchema = () => Yup.string()
+        .trim()
+        .min(2, 'Please enter a name more than 2 characters')
+        .max(20, 'Must be 20 characters or less')
+        .required('Required');
+
+    const initialValues = {
+        drugName,
+        composition
+    };
+
+    const validationSchema = Yup.object({
+        drugName: nameSchema(),
+        composition: Yup.array().of(
+            Yup.object().shape({
+                name: nameSchema(),
+                activeSubstance: Yup.boolean().default(false)
+            })
+        )
+    });
+
+    const {
+        values
+    } = useFormik({
+        initialValues,
+        validationSchema,
+        onSubmit: values => {
+            alert(JSON.stringify(values, null, 2));
+        }
+    });
+
     return (
         <Badge
             badgeContent={badgeContent}
@@ -156,9 +189,13 @@ const DrugCard: React.FC<Props> = (props: Props) => {
             <Card
                 sx={{ width: 345 }}
                 variant={checked ? 'elevation' : 'outlined'}
-                elevation={checked ? 8 : 0}
+                elevation={checked ? 4 : 0}
             >
-                <DrugCardHeader isEditMode={editMode} drugName={drugName} composition={composition}>
+                <DrugCardHeader
+                    isEditMode={editMode}
+                    drugName={values.drugName}
+                    composition={values.composition}
+                >
                     <Fade in={!readonly && (editMode || btnVisible)}>
                         <Box>
                             <ActionButtons
