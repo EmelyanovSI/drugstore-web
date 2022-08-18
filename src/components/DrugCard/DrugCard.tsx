@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
     Badge,
     Box,
     Card,
     CardActions,
     CardContent,
     Checkbox,
-    Chip,
-    CircularProgress,
     Fade,
     IconButton,
-    Tooltip
+    Tooltip,
+    Typography
 } from '@mui/material';
 import JoinInnerIcon from '@mui/icons-material/JoinInner';
 import CheckIcon from '@mui/icons-material/Check';
@@ -38,6 +36,8 @@ import { fetchDrugsByActiveSubstance } from '../../redux/drugsSlice';
 import { GroupBy } from '../../constants/enum';
 import ActionButtons from './ActionButtons';
 import DrugCardHeader from './DrugCardHeader';
+import { CountriesState } from '../../redux/countriesSlice';
+import { correctName } from '../../utils';
 
 interface Props {
     drug: Drug;
@@ -60,10 +60,9 @@ const DrugCard: React.FC<Props> = (props: Props) => {
     const [country, setCountry] = useState<Country | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [btnVisible, setBtnVisible] = useState(false);
-    const [showCheck, setShowCheck] = useState(false);
-    const [checked, setChecked] = useState(isSelected);
-    const [editMode, setEditMode] = useState(false);
+    const [isActionButtonsVisible, setIsActionButtonsVisible] = useState(false);
+    const [isCheckButtonVisible, setIsCheckButtonVisible] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
 
     useEffect(() => {
         if (countryId) {
@@ -76,27 +75,19 @@ const DrugCard: React.FC<Props> = (props: Props) => {
                 setLoading(false);
             });
         }
-    }, [dispatch, countryId]);
+    }, [countryId]);
 
     useEffect(() => {
-        setChecked(isSelected);
-    }, [isSelected]);
-
-    useEffect(() => {
-        readonly && setEditMode(false);
+        readonly && setIsEdit(false);
     }, [readonly]);
 
     const handleBadgeClick = () => {
-        if (!showCheck && selectedDrugsIsEmpty) {
+        if (!isCheckButtonVisible && selectedDrugsIsEmpty) {
             return;
         }
-        if (checked) {
-            setChecked(false);
-            dispatch(markDrugAsDeselected(drugId));
-        } else {
-            setChecked(true);
-            dispatch(markDrugAsSelected(drugId));
-        }
+        isSelected
+            ? dispatch(markDrugAsDeselected(drugId))
+            : dispatch(markDrugAsSelected(drugId));
     };
 
     const handleFavoriteClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -115,27 +106,27 @@ const DrugCard: React.FC<Props> = (props: Props) => {
 
     const handleActionEdit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.stopPropagation();
-        setEditMode(!editMode);
+        setIsEdit(!isEdit);
     };
 
     const handleActionSave = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.stopPropagation();
-        setEditMode(!editMode);
+        setIsEdit(!isEdit);
     };
 
     const handleActionCancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.stopPropagation();
-        setEditMode(!editMode);
+        setIsEdit(!isEdit);
     };
 
     const badgeContent = (
         <Box
-            onMouseOver={() => setShowCheck(true)}
-            onMouseOut={() => setShowCheck(false)}
+            onMouseOver={() => setIsCheckButtonVisible(true)}
+            onMouseOut={() => setIsCheckButtonVisible(false)}
         >
-            {showCheck ? (
-                <Tooltip title={checked ? 'Deselect' : 'Select'}>
-                    <Box>{checked
+            {isCheckButtonVisible ? (
+                <Tooltip title={isSelected ? 'Deselect' : 'Select'}>
+                    <Box>{isSelected
                         ? <CloseIcon cursor="pointer" fontSize="inherit" />
                         : <CheckIcon cursor="pointer" fontSize="inherit" />
                     }</Box>
@@ -144,25 +135,20 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         </Box>
     );
 
-    const nameSchema = () => Yup.string()
+    const nameValidationSchema = () => Yup.string()
         .trim()
         .min(2, 'Please enter a name more than 2 characters')
         .max(20, 'Must be 20 characters or less')
         .required('Required');
 
     const initialValues = {
-        drugName,
-        composition
+        drug: drugName,
+        country: country?.name
     };
 
     const validationSchema = Yup.object({
-        drugName: nameSchema(),
-        composition: Yup.array().of(
-            Yup.object().shape({
-                name: nameSchema(),
-                activeSubstance: Yup.boolean().default(false)
-            })
-        )
+        drug: nameValidationSchema(),
+        country: nameValidationSchema()
     });
 
     const {
@@ -170,6 +156,7 @@ const DrugCard: React.FC<Props> = (props: Props) => {
     } = useFormik({
         initialValues,
         validationSchema,
+        enableReinitialize: true,
         onSubmit: values => {
             alert(JSON.stringify(values, null, 2));
         }
@@ -179,27 +166,27 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         <Badge
             badgeContent={badgeContent}
             anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-            invisible={!btnVisible && !checked}
+            invisible={!isActionButtonsVisible && !isSelected}
             color="success"
-            onMouseOver={() => setBtnVisible(true)}
-            onMouseOut={() => setBtnVisible(false)}
+            onMouseOver={() => setIsActionButtonsVisible(true)}
+            onMouseOut={() => setIsActionButtonsVisible(false)}
             onClick={handleBadgeClick}
             showZero
         >
             <Card
                 sx={{ width: 345 }}
-                variant={checked ? 'elevation' : 'outlined'}
-                elevation={checked ? 4 : 0}
+                variant={isSelected ? 'elevation' : 'outlined'}
+                elevation={isSelected ? 4 : 0}
             >
                 <DrugCardHeader
-                    isEditMode={editMode}
-                    drugName={values.drugName}
-                    composition={values.composition}
+                    {...{ error, loading, isEdit }}
+                    drug={values.drug}
+                    country={values.country}
                 >
-                    <Fade in={!readonly && (editMode || btnVisible)}>
+                    <Fade in={!readonly && (isEdit || isActionButtonsVisible)}>
                         <Box>
                             <ActionButtons
-                                editMode={editMode}
+                                editMode={isEdit}
                                 onEdit={handleActionEdit}
                                 onSave={handleActionSave}
                                 onCancel={handleActionCancel}
@@ -207,24 +194,16 @@ const DrugCard: React.FC<Props> = (props: Props) => {
                         </Box>
                     </Fade>
                 </DrugCardHeader>
-                <CardContent>~ ${cost || '10'}</CardContent>
+                <CardContent>{
+                    composition.map(({ _id, name, activeSubstance }) => (
+                        <Typography key={_id} variant="body2">
+                            {activeSubstance ? <strong>{correctName(name)}</strong> : correctName(name)}
+                        </Typography>
+                    ))
+                }</CardContent>
                 <CardActions>
-                    {loading && <CircularProgress size={20} color="success" />}
-                    {error && (
-                        <Alert variant="outlined" severity="error">
-                            Country not found
-                        </Alert>
-                    )}
-                    {country && (
-                        <Chip
-                            label={country.name}
-                            size="small"
-                            variant="outlined"
-                            color="success"
-                            clickable
-                        />
-                    )}
-                    <Fade in={btnVisible}>
+                    ~ ${cost || '10'}
+                    <Fade in={isActionButtonsVisible}>
                         <Box style={{ marginLeft: 'auto' }}>
                             <Tooltip title="Similar">
                                 <IconButton onClick={handleSimilarClick}>

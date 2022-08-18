@@ -1,89 +1,137 @@
-import React, { useState } from 'react';
-import { Autocomplete, CardHeader, Chip, InputBase, TextField, Typography } from '@mui/material';
+import React from 'react';
+import {
+    Autocomplete, Box,
+    CardHeader,
+    Chip,
+    CircularProgress,
+    InputBase,
+    TextField
+} from '@mui/material';
 
 import { correctName } from '../../utils';
-import { Substance } from '../../interfaces/substacne.interface';
+import { CountriesState, selectCountriesIsEmpty } from '../../redux/countriesSlice';
+import { useAppSelector } from '../../redux/store';
 
-interface CardHeaderProps {
+interface SubheaderProps {
+    country?: string;
+    loading?: boolean;
+    error: string | null;
+}
+
+interface CommonHeaderProps extends SubheaderProps {
     children?: JSX.Element & React.ReactNode;
-    drugName: string;
-    composition: Array<Substance>;
+    drug: string;
 }
 
-interface DrugCardHeaderProps extends CardHeaderProps {
-    isEditMode: boolean;
+interface DynamicHeaderProps extends CommonHeaderProps {
+    list: CountriesState & { isEmpty: boolean };
 }
 
-const CardHeaderStatic: React.FC<CardHeaderProps> = (props: CardHeaderProps) => {
-    const { children, drugName, composition } = props;
+interface DrugCardHeaderProps extends CommonHeaderProps {
+    isEdit: boolean;
+}
 
-    const title = correctName(drugName);
-    const subheader = composition.map(({ _id, name, activeSubstance }) => (
-        <Typography key={_id} variant="body2">
-            {activeSubstance ? <strong>{correctName(name)}</strong> : correctName(name)}
-        </Typography>
-    ));
+const Subheader: React.FC<SubheaderProps> = (props: SubheaderProps) => {
+    const { loading, error, country } = props;
+
+    if (loading) {
+        return (
+            <CircularProgress size={20} color="success" />
+        );
+    }
+
+    if (error) {
+        return (
+            <Chip
+                label={error}
+                size="small"
+                variant="filled"
+                color="error"
+            />
+        );
+    }
+
+    if (!country) {
+        return (
+            <Chip
+                label="Country not found"
+                size="small"
+                variant="filled"
+                color="error"
+            />
+        );
+    }
+
+    return (
+        <Chip
+            label={correctName(country)}
+            size="small"
+            variant="outlined"
+            color="success"
+        />
+    );
+};
+
+const CardHeaderStatic: React.FC<CommonHeaderProps> = (props: CommonHeaderProps) => {
+    const { children, drug, ...other } = props;
+
+    const title = correctName(drug);
+    const subheader = <Subheader {...other} />;
 
     return (
         <CardHeader
-            title={title}
-            subheader={subheader}
+            {...{ title, subheader }}
             action={children}
         />
     );
 };
 
-const CardHeaderDynamic: React.FC<CardHeaderProps> = (props: CardHeaderProps) => {
+const CardHeaderDynamic: React.FC<DynamicHeaderProps> = (props: DynamicHeaderProps) => {
     const {
         children,
-        drugName,
-        composition
+        drug,
+        list,
+        ...other
     } = props;
-
-    const [nameArray, setNameArray] = useState(composition.map(({ name }) => name));
+    const { loading, error, isEmpty, countries } = list;
 
     const title = (
         <InputBase
-            name="drugName"
+            name="drug"
             placeholder="Drug name"
-            value={drugName}
+            value={drug}
         />
     );
-
     const subheader = (
         <Autocomplete
-            multiple
-            freeSolo
+            options={countries}
+            autoHighlight
             size="small"
-            value={[...nameArray]}
-            renderInput={params => (
+            defaultValue={countries.find(({ name }) => name === other.country)}
+            getOptionLabel={(option) => option.name}
+            renderOption={(props, option) => {
+                return (
+                    <Box component="li" {...props}>
+                        <Chip label={option.name} clickable />
+                    </Box>
+                );
+            }}
+            renderInput={(params) => (
                 <TextField
                     {...params}
-                    placeholder="Substance"
+                    label="Country"
+                    inputProps={{
+                        ...params.inputProps,
+                        autoComplete: 'new-password' // disable autocomplete and autofill
+                    }}
                 />
             )}
-            renderTags={(value, getTagProps) => value.map(
-                (option, index) => {
-                    return (
-                        <Chip
-                            size="small"
-                            label={option}
-                            {...getTagProps({ index })}
-                        />
-                    );
-                }
-            )}
-            onChange={(_, value) => {
-                setNameArray(value);
-            }}
-            options={[]}
         />
     );
 
     return (
         <CardHeader
-            title={title}
-            subheader={subheader}
+            {...{ title, subheader }}
             action={children}
         />
     );
@@ -92,22 +140,23 @@ const CardHeaderDynamic: React.FC<CardHeaderProps> = (props: CardHeaderProps) =>
 const DrugCardHeader: React.FC<DrugCardHeaderProps> = (props: DrugCardHeaderProps) => {
     const {
         children,
-        isEditMode,
-        drugName,
-        composition,
+        isEdit,
         ...other
     } = props;
 
-    if (isEditMode) {
+    const countriesState: CountriesState = useAppSelector(state => state.countriesReducer);
+    const isEmpty = useAppSelector(selectCountriesIsEmpty);
+
+    if (isEdit) {
         return (
-            <CardHeaderDynamic {...other} drugName={drugName} composition={composition}>
+            <CardHeaderDynamic {...other} list={{ ...countriesState, isEmpty }}>
                 {children}
             </CardHeaderDynamic>
         );
     }
 
     return (
-        <CardHeaderStatic drugName={drugName} composition={composition}>
+        <CardHeaderStatic {...other}>
             {children}
         </CardHeaderStatic>
     );
