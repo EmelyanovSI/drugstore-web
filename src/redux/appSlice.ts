@@ -1,17 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from './store';
-import { GroupBy } from '../constants/enum';
-
-export interface AppState {
-    selectedDrugsIds: Array<string>;
-    favoriteDrugsIds: Array<string>;
-    selectedCountryId: string | null;
-    countriesCount: number;
-    drugsCount: number;
-    readonly: boolean;
-    groupBy: GroupBy;
-}
+import { AppState } from './state';
+import { GroupBy } from '../constants/enums';
 
 const initialState: AppState = {
     selectedDrugsIds: [],

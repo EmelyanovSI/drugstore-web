@@ -24,20 +24,20 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { getCountryById } from '../../services/countries.service';
 import {
     addDrugToFavorite,
-    removeDrugFromFavorite,
+    markDrugAsDeselected,
     markDrugAsSelected,
+    removeDrugFromFavorite,
     selectIsDrugFavorite,
     selectIsDrugSelected,
     selectSelectedDrugsIsEmpty,
-    markDrugAsDeselected,
     setGroupBy
 } from '../../redux/appSlice';
 import { fetchDrugsByActiveSubstance } from '../../redux/drugsSlice';
-import { GroupBy } from '../../constants/enum';
+import { GroupBy, Status } from '../../constants/enums';
 import ActionButtons from './ActionButtons';
 import DrugCardHeader from './DrugCardHeader';
-import { CountriesState } from '../../redux/countriesSlice';
 import { correctName } from '../../utils';
+import { Message } from '../../constants/types';
 
 interface Props {
     drug: Drug;
@@ -53,26 +53,28 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         composition,
         cost
     } = props.drug;
-    const readonly = useAppSelector(state => state.appReducer.readonly);
+    const readonly = useAppSelector<boolean>((state) => state.appReducer.readonly);
     const isSelected = useAppSelector(selectIsDrugSelected(drugId));
     const isFavorite = useAppSelector(selectIsDrugFavorite(drugId));
     const selectedDrugsIsEmpty = useAppSelector(selectSelectedDrugsIsEmpty);
+
     const [country, setCountry] = useState<Country | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [message, setMessage] = useState<Message>(null);
+    const [status, setStatus] = useState(Status.Idle);
     const [isActionButtonsVisible, setIsActionButtonsVisible] = useState(false);
     const [isCheckButtonVisible, setIsCheckButtonVisible] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
 
     useEffect(() => {
         if (countryId) {
-            setLoading(true);
-            getCountryById(countryId).then(value => {
-                setCountry(value.data);
-            }).catch(reason => {
-                setError(reason.message);
-            }).finally(() => {
-                setLoading(false);
+            setStatus(Status.Loading);
+            getCountryById(countryId).then(response => {
+                setCountry(response.data);
+                setMessage(null);
+                setStatus(Status.Succeeded);
+            }).catch(error => {
+                setMessage(error.message);
+                setStatus(Status.Failed);
             });
         }
     }, [countryId]);
@@ -179,7 +181,7 @@ const DrugCard: React.FC<Props> = (props: Props) => {
                 elevation={isSelected ? 4 : 0}
             >
                 <DrugCardHeader
-                    {...{ error, loading, isEdit }}
+                    {...{ status, message, isEdit }}
                     drug={values.drug}
                     country={values.country}
                 >

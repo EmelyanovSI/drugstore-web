@@ -5,13 +5,13 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { selectFavoriteDrugsCount, selectFavoriteDrugsIsEmpty, setGroupBy } from '../../redux/appSlice';
 import ChipList from './ChipList';
 import { CountryChip, SimilarChip } from './CountryChip';
-import { GroupBy } from '../../constants/enum';
+import { GroupBy } from '../../constants/enums';
 
 const ChipNav: React.FC = () => {
     const dispatch = useAppDispatch();
-    const groupBy = useAppSelector(state => state.appReducer.groupBy);
+    const groupBy = useAppSelector<GroupBy>((state) => state.appReducer.groupBy);
     const favoriteDrugsIsEmpty = useAppSelector(selectFavoriteDrugsIsEmpty);
-    const favoriteDrugsCount = useAppSelector(selectFavoriteDrugsCount);
+    const favoriteDrugsCount = useAppSelector<number>(selectFavoriteDrugsCount);
 
     const [prevGroupBy, setPrevGroupBy] = useState(groupBy);
 

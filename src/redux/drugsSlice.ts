@@ -1,18 +1,14 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isFulfilled, isPending, isRejected } from '@reduxjs/toolkit';
 
-import { FulfilledAction, RejectedAction, RootState } from './store';
-import { Drug } from '../interfaces/drugs.interface';
+import { RootState } from './store';
+import { DrugsState } from './state';
+import { Status } from '../constants/enums';
 import { getDrugById, getDrugs, getDrugsByCountry } from '../services/drugs.service';
-
-export interface DrugsState {
-    drugs: Array<Drug>;
-    loading: boolean;
-    error?: string | null;
-}
 
 const initialState: DrugsState = {
     drugs: [],
-    loading: false
+    status: Status.Idle,
+    message: null
 };
 
 export const drugsSlice = createSlice({
@@ -20,57 +16,33 @@ export const drugsSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: builder => builder
-        .addCase(fetchDrugs.pending, (state) => {
-            state.loading = true;
+        .addMatcher(isPending(
+            fetchDrugs,
+            fetchDrugsByCountry,
+            fetchDrugsByIds,
+            fetchDrugsByActiveSubstance
+        ), (state) => {
+            state.status = Status.Loading;
         })
-        .addCase(fetchDrugs.fulfilled, (state, action) => {
-            state.drugs = action.payload.slice(1, 20);
+        .addMatcher(isFulfilled(
+            fetchDrugs,
+            fetchDrugsByCountry,
+            fetchDrugsByIds,
+            fetchDrugsByActiveSubstance
+        ), (state, action) => {
+            state.drugs = action.payload.slice(0, 20);
+            state.message = null;
+            state.status = Status.Succeeded;
         })
-        .addCase(fetchDrugs.rejected, (state, action) => {
-            state.error = action.error.message;
+        .addMatcher(isRejected(
+            fetchDrugs,
+            fetchDrugsByCountry,
+            fetchDrugsByIds,
+            fetchDrugsByActiveSubstance
+        ), (state, action) => {
+            state.message = action.error.message;
+            state.status = Status.Failed;
         })
-        .addCase(fetchDrugsByCountry.pending, (state) => {
-            state.loading = true;
-        })
-        .addCase(fetchDrugsByCountry.fulfilled, (state, action) => {
-            state.drugs = action.payload.slice(1, 20);
-        })
-        .addCase(fetchDrugsByCountry.rejected, (state, action) => {
-            state.error = action.error.message;
-        })
-        .addCase(fetchDrugsByIds.pending, (state) => {
-            state.loading = true;
-        })
-        .addCase(fetchDrugsByIds.fulfilled, (state, action) => {
-            state.drugs = action.payload;
-        })
-        .addCase(fetchDrugsByIds.rejected, (state, action) => {
-            state.error = action.error.message;
-        })
-        .addCase(fetchDrugsByActiveSubstance.pending, (state) => {
-            state.loading = true;
-        })
-        .addCase(fetchDrugsByActiveSubstance.fulfilled, (state, action) => {
-            state.drugs = action.payload.slice(1, 10);
-        })
-        .addCase(fetchDrugsByActiveSubstance.rejected, (state, action) => {
-            state.error = action.error.message;
-        })
-        .addMatcher<FulfilledAction | RejectedAction>(
-            action => (
-                action.type.endsWith('fetchDrugs/fulfilled') ||
-                action.type.endsWith('fetchDrugs/rejected') ||
-                action.type.endsWith('fetchDrugsByCountry/fulfilled') ||
-                action.type.endsWith('fetchDrugsByCountry/rejected') ||
-                action.type.endsWith('fetchDrugsByIds/fulfilled') ||
-                action.type.endsWith('fetchDrugsByIds/rejected') ||
-                action.type.endsWith('fetchDrugsByActiveSubstance/fulfilled') ||
-                action.type.endsWith('fetchDrugsByActiveSubstance/rejected')
-            ),
-            state => {
-                state.loading = false;
-            }
-        )
 });
 
 export const selectDrugsCount = (state: RootState) => state.drugsReducer.drugs.length;

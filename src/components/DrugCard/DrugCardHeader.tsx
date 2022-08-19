@@ -1,21 +1,17 @@
 import React from 'react';
-import {
-    Autocomplete, Box,
-    CardHeader,
-    Chip,
-    CircularProgress,
-    InputBase,
-    TextField
-} from '@mui/material';
+import { Autocomplete, Box, CardHeader, Chip, CircularProgress, InputBase, TextField } from '@mui/material';
 
 import { correctName } from '../../utils';
-import { CountriesState, selectCountriesIsEmpty } from '../../redux/countriesSlice';
+import { selectCountriesIsEmpty } from '../../redux/countriesSlice';
 import { useAppSelector } from '../../redux/store';
+import { CountriesState } from '../../redux/state';
+import { Message } from '../../constants/types';
+import { Status } from '../../constants/enums';
 
 interface SubheaderProps {
     country?: string;
-    loading?: boolean;
-    error: string | null;
+    message: Message;
+    status: Status;
 }
 
 interface CommonHeaderProps extends SubheaderProps {
@@ -32,29 +28,18 @@ interface DrugCardHeaderProps extends CommonHeaderProps {
 }
 
 const Subheader: React.FC<SubheaderProps> = (props: SubheaderProps) => {
-    const { loading, error, country } = props;
+    const { status, message, country } = props;
 
-    if (loading) {
+    if ([Status.Idle, Status.Loading].includes(status) || !country) {
         return (
             <CircularProgress size={20} color="success" />
         );
     }
 
-    if (error) {
+    if ([Status.Failed].includes(status)) {
         return (
             <Chip
-                label={error}
-                size="small"
-                variant="filled"
-                color="error"
-            />
-        );
-    }
-
-    if (!country) {
-        return (
-            <Chip
-                label="Country not found"
+                label={message}
                 size="small"
                 variant="filled"
                 color="error"
@@ -93,7 +78,7 @@ const CardHeaderDynamic: React.FC<DynamicHeaderProps> = (props: DynamicHeaderPro
         list,
         ...other
     } = props;
-    const { loading, error, isEmpty, countries } = list;
+    const { status, message, isEmpty, countries } = list;
 
     const title = (
         <InputBase
@@ -144,7 +129,7 @@ const DrugCardHeader: React.FC<DrugCardHeaderProps> = (props: DrugCardHeaderProp
         ...other
     } = props;
 
-    const countriesState: CountriesState = useAppSelector(state => state.countriesReducer);
+    const countriesState = useAppSelector<CountriesState>((state) => state.countriesReducer);
     const isEmpty = useAppSelector(selectCountriesIsEmpty);
 
     if (isEdit) {

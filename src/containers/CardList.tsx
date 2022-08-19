@@ -3,15 +3,17 @@ import { Alert, AlertTitle, Grid, Skeleton, Stack } from '@mui/material';
 
 import DrugCard from '../components/DrugCard/DrugCard';
 import { Drug } from '../interfaces/drugs.interface';
-import { DrugsState, selectDrugsIsEmpty } from '../redux/drugsSlice';
+import { selectDrugsIsEmpty } from '../redux/drugsSlice';
 import { useAppSelector } from '../redux/store';
+import { DrugsState } from '../redux/state';
+import { Status } from '../constants/enums';
 
-const CardList: React.FC<DrugsState> = ({ loading, error, drugs }: DrugsState) => {
+const CardList: React.FC<DrugsState> = ({ status, message, drugs }: DrugsState) => {
     const drugsIsEmpty = useAppSelector(selectDrugsIsEmpty);
-    const drugsCount = useAppSelector(state => state.appReducer.drugsCount);
+    const drugsCount = useAppSelector<number>((state) => state.appReducer.drugsCount);
     const drugsSkeletonKeys = Array.from(Array(drugsCount).keys());
 
-    if (loading) {
+    if (status === Status.Loading) {
         return (
             <Grid container spacing={4} padding={2}>
                 {drugsSkeletonKeys.map(key => (
@@ -28,12 +30,12 @@ const CardList: React.FC<DrugsState> = ({ loading, error, drugs }: DrugsState) =
         );
     }
 
-    if (error) {
+    if (status === Status.Failed) {
         return (
             <Grid padding={2}>
                 <Alert severity="error">
                     <AlertTitle>Error</AlertTitle>
-                    {error} — <strong>try again later!</strong>
+                    {message} — <strong>try again later!</strong>
                 </Alert>
             </Grid>
         );

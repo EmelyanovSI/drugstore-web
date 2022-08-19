@@ -2,17 +2,18 @@ import React from 'react';
 import { Skeleton, Tab, Tabs } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { CountriesState, selectCountriesIsEmpty } from '../../redux/countriesSlice';
-import { setSelectedCountry, setGroupBy } from '../../redux/appSlice';
+import { selectCountriesIsEmpty } from '../../redux/countriesSlice';
+import { setGroupBy, setSelectedCountry } from '../../redux/appSlice';
 import { CountryChip } from './CountryChip';
-import { GroupBy } from '../../constants/enum';
+import { GroupBy, Status } from '../../constants/enums';
+import { CountriesState } from '../../redux/state';
 
 const ChipList: React.FC = () => {
     const dispatch = useAppDispatch();
-    const { loading, error, countries }: CountriesState = useAppSelector(state => state.countriesReducer);
-    const selectedCountryId = useAppSelector(state => state.appReducer.selectedCountryId);
-    const countriesCount = useAppSelector(state => state.appReducer.countriesCount);
-    const groupBy = useAppSelector(state => state.appReducer.groupBy);
+    const { status, message, countries } = useAppSelector<CountriesState>((state) => state.countriesReducer);
+    const selectedCountryId = useAppSelector<string>((state) => state.appReducer.selectedCountryId);
+    const countriesCount = useAppSelector<number>((state) => state.appReducer.countriesCount);
+    const groupBy = useAppSelector<GroupBy>((state) => state.appReducer.groupBy);
     const countriesIsEmpty = useAppSelector(selectCountriesIsEmpty);
     const countriesSkeletonKeys = Array.from(Array(countriesCount).keys());
 
@@ -38,7 +39,7 @@ const ChipList: React.FC = () => {
         />
     );
 
-    if (loading) {
+    if (status === Status.Loading) {
         return (
             <Tabs>
                 <Tab label={<AllChip />} />
@@ -55,13 +56,13 @@ const ChipList: React.FC = () => {
         );
     }
 
-    if (error) {
+    if (status === Status.Failed) {
         return (
             <Tabs>
                 <Tab label={<AllChip />} />
                 <Tab label={
                     <CountryChip
-                        label={error}
+                        label={message}
                         checked={true}
                         color="error"
                         disabled

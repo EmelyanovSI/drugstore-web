@@ -43,7 +43,7 @@ import { fetchDrugs, fetchDrugsByCountry, fetchDrugsByIds } from '../redux/drugs
 import ElevationScroll from '../components/ElevationScroll';
 import ScrollTo from '../components/ScrollTo';
 import ChipNav from '../components/ChipNav/ChipNav';
-import { GroupBy } from '../constants/enum';
+import { GroupBy, ThemeMode } from '../constants/enums';
 
 interface Props {
     loadingDrugs: boolean;
@@ -51,13 +51,13 @@ interface Props {
 
 const Header: React.FC<Props> = ({ loadingDrugs }: Props) => {
     const dispatch = useAppDispatch();
-    const mode = useAppSelector(state => state.themeReducer.mode);
-    const selectedCountryId = useAppSelector(state => state.appReducer.selectedCountryId);
-    const favoriteDrugsIds = useAppSelector(state => state.appReducer.favoriteDrugsIds);
-    const groupBy = useAppSelector(state => state.appReducer.groupBy);
-    const readonly = useAppSelector(state => state.appReducer.readonly);
+    const mode = useAppSelector<ThemeMode>((state) => state.themeReducer.mode);
+    const selectedCountryId = useAppSelector<string>((state) => state.appReducer.selectedCountryId);
+    const favoriteDrugsIds = useAppSelector<Array<string>>((state) => state.appReducer.favoriteDrugsIds);
+    const groupBy = useAppSelector<GroupBy>((state) => state.appReducer.groupBy);
+    const readonly = useAppSelector<boolean>((state) => state.appReducer.readonly);
     const selectedDrugsIsEmpty = useAppSelector(selectSelectedDrugsIsEmpty);
-    const selectedDrugsCount = useAppSelector(selectSelectedDrugsCount);
+    const selectedDrugsCount = useAppSelector<number>(selectSelectedDrugsCount);
     const isAnyFavoriteInSelected = useAppSelector(selectIsAnyFavoriteInSelected);
     const isAllSelectedAreFavorite = useAppSelector(selectIsAllSelectedAreFavorite);
 

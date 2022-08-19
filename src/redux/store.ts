@@ -1,6 +1,6 @@
 import storage from 'redux-persist/lib/storage';
 import { combineReducers } from 'redux';
-import { AsyncThunk, configureStore } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import {
     persistStore,
@@ -17,26 +17,33 @@ import themeReducer from './themeSlice';
 import drugsReducer from './drugsSlice';
 import countriesReducer from './countriesSlice';
 import appReducer from './appSlice';
+import {
+    AppState,
+    CountriesState,
+    DrugsState,
+    ThemeState
+} from './state';
 
-const persistConfig = {
-    rootReducer: { key: 'rootReducer', storage, whitelist: [] },
-
-    themeReducer: { key: 'themeReducer', storage, whitelist: ['mode'] },
-    drugsReducer: { key: 'drugsReducer', storage, whitelist: [] },
-    countriesReducer: { key: 'countriesReducer', storage, whitelist: [] },
-    appReducer: { key: 'appReducer', storage, blacklist: [] },
-};
-
-const rootReducer = combineReducers({
-    themeReducer: persistReducer(persistConfig.themeReducer, themeReducer),
-    drugsReducer: persistReducer(persistConfig.drugsReducer, drugsReducer),
-    countriesReducer: persistReducer(persistConfig.countriesReducer, countriesReducer),
-    appReducer: persistReducer(persistConfig.appReducer, appReducer),
-});
+const [
+    themePersistor,
+    drugsPersistor,
+    countriesPersistor,
+    appPersistor
+] = [
+    { key: 'theme', storage, blacklist: [] },
+    { key: 'drugs', storage, whitelist: [] },
+    { key: 'countries', storage, whitelist: [] },
+    { key: 'app', storage, blacklist: [] }
+];
 
 const store = configureStore({
     preloadedState: {},
-    reducer: persistReducer(persistConfig.rootReducer, rootReducer),
+    reducer: combineReducers({
+        themeReducer: persistReducer<ThemeState>(themePersistor, themeReducer),
+        drugsReducer: persistReducer<DrugsState>(drugsPersistor, drugsReducer),
+        countriesReducer: persistReducer<CountriesState>(countriesPersistor, countriesReducer),
+        appReducer: persistReducer<AppState>(appPersistor, appReducer)
+    }),
     devTools: process.env.NODE_ENV !== 'production',
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({
         serializableCheck: {
@@ -46,12 +53,6 @@ const store = configureStore({
     enhancers: []
 });
 const persistor = persistStore(store);
-
-export type GenericAsyncThunk = AsyncThunk<unknown, unknown, any>
-
-export type PendingAction = ReturnType<GenericAsyncThunk['pending']>
-export type RejectedAction = ReturnType<GenericAsyncThunk['rejected']>
-export type FulfilledAction = ReturnType<GenericAsyncThunk['fulfilled']>
 
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch

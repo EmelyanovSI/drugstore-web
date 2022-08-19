@@ -13,41 +13,30 @@ import { fetchCountries, selectCountriesCount, selectCountriesIsEmpty } from '..
 import { setCountriesCount, setDrugsCount, setGroupBy } from '../redux/appSlice';
 import Header from '../containers/Header';
 import CardList from '../containers/CardList';
-import { GroupBy } from '../constants/enum';
+import { GroupBy, Status } from '../constants/enums';
+import { CountriesState, DrugsState } from '../redux/state';
 
 const autoHideDuration = 6000;
 
 const HomePage: React.FC = () => {
     const dispatch = useAppDispatch();
-    const {
-        loading: loadingDrugs,
-        error: errorDrugs,
-        drugs
-    } = useAppSelector(state => state.drugsReducer);
-    const errorCountries = useAppSelector(state => state.countriesReducer.error);
-    const selectedCountryId = useAppSelector(state => state.appReducer.selectedCountryId);
-    const favoriteDrugsIds = useAppSelector(state => state.appReducer.favoriteDrugsIds);
-    const groupBy = useAppSelector(state => state.appReducer.groupBy);
+    const drugsList = useAppSelector<DrugsState>((state) => state.drugsReducer);
+    const countriesList = useAppSelector<CountriesState>((state) => state.countriesReducer);
+    const selectedCountryId = useAppSelector<string>((state) => state.appReducer.selectedCountryId);
+    const favoriteDrugsIds = useAppSelector<Array<string>>((state) => state.appReducer.favoriteDrugsIds);
+    const groupBy = useAppSelector<GroupBy>((state) => state.appReducer.groupBy);
     const countriesIsEmpty = useAppSelector(selectCountriesIsEmpty);
     const drugsIsEmpty = useAppSelector(selectDrugsIsEmpty);
-    const drugsCount = useAppSelector(selectDrugsCount);
-    const countriesCount = useAppSelector(selectCountriesCount);
+    const drugsCount = useAppSelector<number>(selectDrugsCount);
+    const countriesCount = useAppSelector<number>(selectCountriesCount);
 
-    const [openDrugs, setOpenDrugs] = React.useState(!!errorDrugs);
-    const [openCountries, setOpenCountries] = React.useState(!!errorCountries);
+    const [openAlert, setOpenAlert] = React.useState([drugsList.status, countriesList.status].includes(Status.Failed));
 
-    const handleCloseDrugs = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    const handleCloseAlert = (event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
         }
-        setOpenDrugs(false);
-    };
-
-    const handleCloseCountries = (event?: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setOpenCountries(false);
+        setOpenAlert(false);
     };
 
     useEffect(() => {
@@ -81,21 +70,12 @@ const HomePage: React.FC = () => {
 
     return (
         <Box>
-            <Header loadingDrugs={loadingDrugs} />
-            <CardList
-                drugs={drugs}
-                loading={loadingDrugs}
-                error={errorDrugs}
-            />
+            <Header loadingDrugs={drugsList.status === Status.Loading} />
+            <CardList {...drugsList} />
 
-            <Snackbar open={openDrugs} autoHideDuration={autoHideDuration} onClose={handleCloseDrugs}>
-                <Alert onClose={handleCloseDrugs} severity={'error'} sx={{ width: '100%' }}>
-                    {errorDrugs}
-                </Alert>
-            </Snackbar>
-            <Snackbar open={openCountries} autoHideDuration={autoHideDuration} onClose={handleCloseCountries}>
-                <Alert onClose={handleCloseCountries} severity={'error'} sx={{ width: '100%' }}>
-                    {errorCountries}
+            <Snackbar open={openAlert} autoHideDuration={autoHideDuration} onClose={handleCloseAlert}>
+                <Alert onClose={handleCloseAlert} severity={'error'} sx={{ width: '100%' }}>
+                    {drugsList.message || countriesList.message}
                 </Alert>
             </Snackbar>
         </Box>
