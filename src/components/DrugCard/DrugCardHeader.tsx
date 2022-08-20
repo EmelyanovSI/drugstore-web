@@ -7,6 +7,7 @@ import { useAppSelector } from '../../redux/store';
 import { CountriesState } from '../../redux/state';
 import { Message } from '../../constants/types';
 import { Status } from '../../constants/enums';
+import { CountryChip } from '../ChipNav/CountryChip';
 
 interface SubheaderProps {
     children?: JSX.Element & React.ReactNode;
@@ -103,7 +104,10 @@ const CardHeaderDynamic: React.FC<DynamicHeaderProps> = (props: DynamicHeaderPro
                     renderOption={(props, option) => {
                         return (
                             <Box component="li" {...props}>
-                                <Chip label={option.name} clickable />
+                                <CountryChip
+                                    label={option.name}
+                                    checked={option.name === other.country}
+                                />
                             </Box>
                         );
                     }}
