@@ -9,14 +9,14 @@ import { Message } from '../../constants/types';
 import { Status } from '../../constants/enums';
 
 interface SubheaderProps {
-    country?: string;
+    children?: JSX.Element & React.ReactNode;
     message: Message;
     status: Status;
 }
 
 interface CommonHeaderProps extends SubheaderProps {
-    children?: JSX.Element & React.ReactNode;
     drug: string;
+    country?: string;
 }
 
 interface DynamicHeaderProps extends CommonHeaderProps {
@@ -28,11 +28,11 @@ interface DrugCardHeaderProps extends CommonHeaderProps {
 }
 
 const Subheader: React.FC<SubheaderProps> = (props: SubheaderProps) => {
-    const { status, message, country } = props;
+    const { status, message, children } = props;
 
-    if ([Status.Idle, Status.Loading].includes(status) || !country) {
+    if ([Status.Idle, Status.Loading].includes(status)) {
         return (
-            <CircularProgress size={20} color="success" />
+            <CircularProgress size={16} color="success" />
         );
     }
 
@@ -47,21 +47,25 @@ const Subheader: React.FC<SubheaderProps> = (props: SubheaderProps) => {
         );
     }
 
-    return (
-        <Chip
-            label={correctName(country)}
-            size="small"
-            variant="outlined"
-            color="success"
-        />
-    );
+    return children ?? null;
 };
 
 const CardHeaderStatic: React.FC<CommonHeaderProps> = (props: CommonHeaderProps) => {
-    const { children, drug, ...other } = props;
+    const { children, drug, country, ...other } = props;
 
     const title = correctName(drug);
-    const subheader = <Subheader {...other} />;
+    const subheader = (
+        <Subheader {...other}>
+            {country ? (
+                <Chip
+                    label={correctName(country)}
+                    size="small"
+                    variant="outlined"
+                    color="success"
+                />
+            ) : undefined}
+        </Subheader>
+    );
 
     return (
         <CardHeader
@@ -88,30 +92,34 @@ const CardHeaderDynamic: React.FC<DynamicHeaderProps> = (props: DynamicHeaderPro
         />
     );
     const subheader = (
-        <Autocomplete
-            options={countries}
-            autoHighlight
-            size="small"
-            defaultValue={countries.find(({ name }) => name === other.country)}
-            getOptionLabel={(option) => option.name}
-            renderOption={(props, option) => {
-                return (
-                    <Box component="li" {...props}>
-                        <Chip label={option.name} clickable />
-                    </Box>
-                );
-            }}
-            renderInput={(params) => (
-                <TextField
-                    {...params}
-                    label="Country"
-                    inputProps={{
-                        ...params.inputProps,
-                        autoComplete: 'new-password' // disable autocomplete and autofill
+        <Subheader message={other.message || message} status={other.status || status}>
+            {other.country ? (
+                <Autocomplete
+                    options={countries}
+                    autoHighlight
+                    size="small"
+                    defaultValue={countries.find(({ name }) => name === other.country)}
+                    getOptionLabel={(option) => option.name}
+                    renderOption={(props, option) => {
+                        return (
+                            <Box component="li" {...props}>
+                                <Chip label={option.name} clickable />
+                            </Box>
+                        );
                     }}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label="Country"
+                            inputProps={{
+                                ...params.inputProps,
+                                autoComplete: 'new-password' // disable autocomplete and autofill
+                            }}
+                        />
+                    )}
                 />
-            )}
-        />
+            ) : undefined}
+        </Subheader>
     );
 
     return (
