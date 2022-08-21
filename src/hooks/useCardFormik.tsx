@@ -8,8 +8,7 @@ import { Country } from '../interfaces/countries.interface';
 import { getCountryById } from '../services/countries.service';
 
 const nameValidationSchema = () => Yup.string()
-    .trim()
-    .min(2, 'Please enter a name more than 2 characters')
+    .min(2, 'Must be 2 characters or more')
     .max(20, 'Must be 20 characters or less')
     .required('Required');
 
@@ -36,7 +35,7 @@ export const useCardFormik = (drug: string, countryId: string) => {
         },
         validationSchema: Yup.object({
             drug: nameValidationSchema(),
-            country: nameValidationSchema()
+            country: nameValidationSchema().nullable()
         }),
         enableReinitialize: true,
         onSubmit: values => {

@@ -59,7 +59,14 @@ const DrugCard: React.FC<Props> = (props: Props) => {
     const [isEdit, setIsEdit] = useState(false);
 
     const { formik, status, message } = useCardFormik(drugName, countryId);
-    const { values } = formik;
+    const {
+        values,
+        errors,
+        isValid,
+        setFieldValue,
+        handleSubmit,
+        handleReset
+    } = formik;
 
     useEffect(() => {
         readonly && setIsEdit(false);
@@ -96,11 +103,13 @@ const DrugCard: React.FC<Props> = (props: Props) => {
     const handleActionSave = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.stopPropagation();
         setIsEdit(!isEdit);
+        handleSubmit();
     };
 
     const handleActionCancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.stopPropagation();
         setIsEdit(!isEdit);
+        handleReset(event);
     };
 
     const badgeContent = (
@@ -139,11 +148,14 @@ const DrugCard: React.FC<Props> = (props: Props) => {
                     {...{ status, message, isEdit }}
                     drug={values.drug}
                     country={values.country}
+                    drugError={errors.drug}
+                    countryError={errors.country}
+                    onChange={setFieldValue}
                 >
                     <Fade in={!readonly && (isEdit || isActionButtonsVisible)}>
                         <Box>
                             <ActionButtons
-                                editMode={isEdit}
+                                {...{ isEdit, isValid }}
                                 onEdit={handleActionEdit}
                                 onSave={handleActionSave}
                                 onCancel={handleActionCancel}

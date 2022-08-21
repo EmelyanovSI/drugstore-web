@@ -5,22 +5,40 @@ import CloseIcon from '@mui/icons-material/Close';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 
 interface ActionButtonsProps {
-    editMode: boolean;
+    isEdit: boolean;
+    isValid: boolean;
     onSave: React.MouseEventHandler<HTMLButtonElement>;
     onCancel: React.MouseEventHandler<HTMLButtonElement>;
     onEdit: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const ActionButtons: React.FC<ActionButtonsProps> = (props: ActionButtonsProps) => {
-    const { editMode, onSave, onCancel, onEdit } = props;
-    if (editMode) {
+    const {
+        isEdit,
+        isValid,
+        onSave,
+        onCancel,
+        onEdit
+    } = props;
+
+    if (isEdit) {
         return (
             <>
-                <Tooltip title="Save">
-                    <IconButton onClick={onSave}>
-                        <CheckIcon fontSize="small" />
-                    </IconButton>
-                </Tooltip>
+                {isValid ? (
+                    <Tooltip title="Save">
+                        <IconButton onClick={onSave}>
+                            <CheckIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                ) : (
+                    <Tooltip title="Invalid">
+                        <span>
+                            <IconButton disabled onClick={onSave}>
+                                <CheckIcon fontSize="small" />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                )}
                 <Tooltip title="Cancel">
                     <IconButton onClick={onCancel}>
                         <CloseIcon fontSize="small" />

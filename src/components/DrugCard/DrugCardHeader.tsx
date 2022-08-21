@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Autocomplete,
     Box,
     CardHeader,
     Chip,
     CircularProgress,
-    InputBase,
     TextField
 } from '@mui/material';
 
@@ -21,21 +20,27 @@ interface State {
     status: Status;
 }
 
-interface CommonHeaderProps {
+interface StaticProps {
     children?: JSX.Element & React.ReactNode;
     drug: string;
     country: string;
 }
 
-interface StaticHeaderProps extends CommonHeaderProps {
+interface DynamicProps {
+    drugError?: string;
+    countryError?: string;
+    onChange: (field: string, value: any, shouldValidate?: boolean) => void;
+}
+
+interface StaticHeaderProps extends StaticProps {
     alt?: JSX.Element & React.ReactNode;
 }
 
-interface DynamicHeaderProps extends StaticHeaderProps {
+interface DynamicHeaderProps extends StaticHeaderProps, DynamicProps {
     countries: Array<Country>;
 }
 
-interface DrugCardHeaderProps extends State, CommonHeaderProps {
+interface DrugCardHeaderProps extends State, StaticProps, DynamicProps {
     isEdit: boolean;
 }
 
@@ -61,40 +66,63 @@ const CardHeaderStatic: React.FC<StaticHeaderProps> = (props: StaticHeaderProps)
 };
 
 const CardHeaderDynamic: React.FC<DynamicHeaderProps> = (props: DynamicHeaderProps) => {
-    const { children, drug, country, countries, alt } = props;
+    const {
+        children,
+        drug,
+        country,
+        countries,
+        alt,
+        drugError,
+        countryError,
+        onChange
+    } = props;
+
+    const [inputValue, setInputValue] = useState(country);
+
+    const handleDrugChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        onChange('drug', event.target.value);
+    };
+
+    const handleCountryChange = (event: React.SyntheticEvent, value?: string | null) => {
+        onChange('country', value);
+    };
 
     const title = (
-        <InputBase
-            name="drug"
-            placeholder="Drug name"
+        <TextField
+            size="small"
+            label="Drug name"
             value={drug}
+            error={!!drugError}
+            helperText={drugError}
+            onChange={handleDrugChange}
         />
     );
     const subheader = alt ?? (
         <Autocomplete
-            options={countries}
             autoHighlight
             size="small"
-            defaultValue={countries.find(({ name }) => name === country)}
-            getOptionLabel={(option) => option.name}
-            renderOption={(props, option) => {
-                return (
-                    <Box component="li" {...props}>
-                        <CountryChip
-                            label={option.name}
-                            checked={option.name === country}
-                        />
-                    </Box>
-                );
-            }}
+            options={countries.map(value => value.name)}
+            value={country}
+            inputValue={inputValue}
+            onChange={handleCountryChange}
+            onInputChange={(_, value) => setInputValue(value)}
+            getOptionLabel={(option) => option}
+            isOptionEqualToValue={(option, value) => option === value}
+            renderOption={(props, option) => (
+                <Box component="li" {...props}>
+                    <CountryChip
+                        label={option}
+                        checked={option === country}
+                        onClick={() => {}}
+                    />
+                </Box>
+            )}
             renderInput={(params) => (
                 <TextField
                     {...params}
                     label="Country"
-                    inputProps={{
-                        ...params.inputProps,
-                        autoComplete: 'new-password' // disable autocomplete and autofill
-                    }}
+                    error={!!countryError}
+                    helperText={countryError}
                 />
             )}
         />
@@ -116,6 +144,7 @@ const DrugCardHeader: React.FC<DrugCardHeaderProps> = (props: DrugCardHeaderProp
         message,
         ...other
     } = props;
+    const { drug, country } = other;
 
     const countries = useAppSelector<Array<Country>>((state) => state.countriesReducer.countries);
 
@@ -136,7 +165,7 @@ const DrugCardHeader: React.FC<DrugCardHeaderProps> = (props: DrugCardHeaderProp
     );
 
     const staticHeader = (alt?: JSX.Element & React.ReactNode) => (
-        <CardHeaderStatic {...other} alt={alt}>
+        <CardHeaderStatic {...{ drug, country }} alt={alt}>
             {children}
         </CardHeaderStatic>
     );
