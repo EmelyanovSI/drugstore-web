@@ -90,11 +90,13 @@ const CardHeaderDynamic: React.FC<DynamicHeaderProps> = (props: DynamicHeaderPro
     const title = (
         <TextField
             size="small"
+            margin="dense"
             label="Drug name"
             value={drug}
             error={!!drugError}
             helperText={drugError}
             onChange={handleDrugChange}
+            required
         />
     );
     const subheader = alt ?? (
@@ -120,9 +122,11 @@ const CardHeaderDynamic: React.FC<DynamicHeaderProps> = (props: DynamicHeaderPro
             renderInput={(params) => (
                 <TextField
                     {...params}
+                    margin="dense"
                     label="Country"
                     error={!!countryError}
                     helperText={countryError}
+                    required
                 />
             )}
         />
