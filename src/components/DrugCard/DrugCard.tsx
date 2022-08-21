@@ -15,13 +15,9 @@ import JoinInnerIcon from '@mui/icons-material/JoinInner';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { Favorite, FavoriteBorder } from '@mui/icons-material';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
 
 import { Drug } from '../../interfaces/drugs.interface';
-import { Country } from '../../interfaces/countries.interface';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { getCountryById } from '../../services/countries.service';
 import {
     addDrugToFavorite,
     markDrugAsDeselected,
@@ -33,11 +29,11 @@ import {
     setGroupBy
 } from '../../redux/appSlice';
 import { fetchDrugsByActiveSubstance } from '../../redux/drugsSlice';
-import { GroupBy, Status } from '../../constants/enums';
+import { GroupBy } from '../../constants/enums';
 import ActionButtons from './ActionButtons';
 import DrugCardHeader from './DrugCardHeader';
 import { correctName } from '../../utils';
-import { Message } from '../../constants/types';
+import { useCardFormik } from '../../hooks/useCardFormik';
 
 interface Props {
     drug: Drug;
@@ -58,26 +54,12 @@ const DrugCard: React.FC<Props> = (props: Props) => {
     const isFavorite = useAppSelector(selectIsDrugFavorite(drugId));
     const selectedDrugsIsEmpty = useAppSelector(selectSelectedDrugsIsEmpty);
 
-    const [country, setCountry] = useState<Country | null>(null);
-    const [message, setMessage] = useState<Message>(null);
-    const [status, setStatus] = useState(Status.Idle);
     const [isActionButtonsVisible, setIsActionButtonsVisible] = useState(false);
     const [isCheckButtonVisible, setIsCheckButtonVisible] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
 
-    useEffect(() => {
-        if (countryId) {
-            setStatus(Status.Loading);
-            getCountryById(countryId).then(response => {
-                setCountry(response.data);
-                setMessage(null);
-                setStatus(Status.Succeeded);
-            }).catch(error => {
-                setMessage(error.message);
-                setStatus(Status.Failed);
-            });
-        }
-    }, [countryId]);
+    const { formik, status, message } = useCardFormik(drugName, countryId);
+    const { values } = formik;
 
     useEffect(() => {
         readonly && setIsEdit(false);
@@ -136,33 +118,6 @@ const DrugCard: React.FC<Props> = (props: Props) => {
             ) : props.number}
         </Box>
     );
-
-    const nameValidationSchema = () => Yup.string()
-        .trim()
-        .min(2, 'Please enter a name more than 2 characters')
-        .max(20, 'Must be 20 characters or less')
-        .required('Required');
-
-    const initialValues = {
-        drug: drugName,
-        country: country?.name
-    };
-
-    const validationSchema = Yup.object({
-        drug: nameValidationSchema(),
-        country: nameValidationSchema()
-    });
-
-    const {
-        values
-    } = useFormik({
-        initialValues,
-        validationSchema,
-        enableReinitialize: true,
-        onSubmit: values => {
-            alert(JSON.stringify(values, null, 2));
-        }
-    });
 
     return (
         <Badge

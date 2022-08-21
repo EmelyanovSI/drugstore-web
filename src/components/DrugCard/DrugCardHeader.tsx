@@ -1,71 +1,55 @@
 import React from 'react';
-import { Autocomplete, Box, CardHeader, Chip, CircularProgress, InputBase, TextField } from '@mui/material';
+import {
+    Autocomplete,
+    Box,
+    CardHeader,
+    Chip,
+    CircularProgress,
+    InputBase,
+    TextField
+} from '@mui/material';
 
 import { correctName } from '../../utils';
-import { selectCountriesIsEmpty } from '../../redux/countriesSlice';
 import { useAppSelector } from '../../redux/store';
-import { CountriesState } from '../../redux/state';
+import { Country } from '../../interfaces/countries.interface';
 import { Message } from '../../constants/types';
 import { Status } from '../../constants/enums';
 import { CountryChip } from '../ChipNav/CountryChip';
 
-interface SubheaderProps {
-    children?: JSX.Element & React.ReactNode;
+interface State {
     message: Message;
     status: Status;
 }
 
-interface CommonHeaderProps extends SubheaderProps {
+interface CommonHeaderProps {
+    children?: JSX.Element & React.ReactNode;
     drug: string;
-    country?: string;
+    country: string;
 }
 
-interface DynamicHeaderProps extends CommonHeaderProps {
-    list: CountriesState & { isEmpty: boolean };
+interface StaticHeaderProps extends CommonHeaderProps {
+    alt?: JSX.Element & React.ReactNode;
 }
 
-interface DrugCardHeaderProps extends CommonHeaderProps {
+interface DynamicHeaderProps extends StaticHeaderProps {
+    countries: Array<Country>;
+}
+
+interface DrugCardHeaderProps extends State, CommonHeaderProps {
     isEdit: boolean;
 }
 
-const Subheader: React.FC<SubheaderProps> = (props: SubheaderProps) => {
-    const { status, message, children } = props;
-
-    if ([Status.Idle, Status.Loading].includes(status)) {
-        return (
-            <CircularProgress size={16} color="success" />
-        );
-    }
-
-    if ([Status.Failed].includes(status)) {
-        return (
-            <Chip
-                label={message}
-                size="small"
-                variant="filled"
-                color="error"
-            />
-        );
-    }
-
-    return children ?? null;
-};
-
-const CardHeaderStatic: React.FC<CommonHeaderProps> = (props: CommonHeaderProps) => {
-    const { children, drug, country, ...other } = props;
+const CardHeaderStatic: React.FC<StaticHeaderProps> = (props: StaticHeaderProps) => {
+    const { children, drug, country, alt } = props;
 
     const title = correctName(drug);
-    const subheader = (
-        <Subheader {...other}>
-            {country ? (
-                <Chip
-                    label={correctName(country)}
-                    size="small"
-                    variant="outlined"
-                    color="success"
-                />
-            ) : undefined}
-        </Subheader>
+    const subheader = alt ?? (
+        <Chip
+            label={correctName(country)}
+            size="small"
+            variant="outlined"
+            color="success"
+        />
     );
 
     return (
@@ -77,13 +61,7 @@ const CardHeaderStatic: React.FC<CommonHeaderProps> = (props: CommonHeaderProps)
 };
 
 const CardHeaderDynamic: React.FC<DynamicHeaderProps> = (props: DynamicHeaderProps) => {
-    const {
-        children,
-        drug,
-        list,
-        ...other
-    } = props;
-    const { status, message, isEmpty, countries } = list;
+    const { children, drug, country, countries, alt } = props;
 
     const title = (
         <InputBase
@@ -92,38 +70,34 @@ const CardHeaderDynamic: React.FC<DynamicHeaderProps> = (props: DynamicHeaderPro
             value={drug}
         />
     );
-    const subheader = (
-        <Subheader message={other.message || message} status={other.status || status}>
-            {other.country ? (
-                <Autocomplete
-                    options={countries}
-                    autoHighlight
-                    size="small"
-                    defaultValue={countries.find(({ name }) => name === other.country)}
-                    getOptionLabel={(option) => option.name}
-                    renderOption={(props, option) => {
-                        return (
-                            <Box component="li" {...props}>
-                                <CountryChip
-                                    label={option.name}
-                                    checked={option.name === other.country}
-                                />
-                            </Box>
-                        );
-                    }}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Country"
-                            inputProps={{
-                                ...params.inputProps,
-                                autoComplete: 'new-password' // disable autocomplete and autofill
-                            }}
+    const subheader = alt ?? (
+        <Autocomplete
+            options={countries}
+            autoHighlight
+            size="small"
+            defaultValue={countries.find(({ name }) => name === country)}
+            getOptionLabel={(option) => option.name}
+            renderOption={(props, option) => {
+                return (
+                    <Box component="li" {...props}>
+                        <CountryChip
+                            label={option.name}
+                            checked={option.name === country}
                         />
-                    )}
+                    </Box>
+                );
+            }}
+            renderInput={(params) => (
+                <TextField
+                    {...params}
+                    label="Country"
+                    inputProps={{
+                        ...params.inputProps,
+                        autoComplete: 'new-password' // disable autocomplete and autofill
+                    }}
                 />
-            ) : undefined}
-        </Subheader>
+            )}
+        />
     );
 
     return (
@@ -138,25 +112,64 @@ const DrugCardHeader: React.FC<DrugCardHeaderProps> = (props: DrugCardHeaderProp
     const {
         children,
         isEdit,
+        status,
+        message,
         ...other
     } = props;
 
-    const countriesState = useAppSelector<CountriesState>((state) => state.countriesReducer);
-    const isEmpty = useAppSelector(selectCountriesIsEmpty);
+    const countries = useAppSelector<Array<Country>>((state) => state.countriesReducer.countries);
 
-    if (isEdit) {
-        return (
-            <CardHeaderDynamic {...other} list={{ ...countriesState, isEmpty }}>
-                {children}
-            </CardHeaderDynamic>
-        );
-    }
+    const loading = <CircularProgress size={18} color="success" />;
+    const error = (
+        <Chip
+            label={message}
+            size="small"
+            variant="filled"
+            color="error"
+        />
+    );
 
-    return (
-        <CardHeaderStatic {...other}>
+    const dynamicHeader = (alt?: JSX.Element & React.ReactNode) => (
+        <CardHeaderDynamic {...other} {...{ countries, alt }}>
+            {children}
+        </CardHeaderDynamic>
+    );
+
+    const staticHeader = (alt?: JSX.Element & React.ReactNode) => (
+        <CardHeaderStatic {...other} alt={alt}>
             {children}
         </CardHeaderStatic>
     );
+
+    if (isEdit) {
+        switch (status) {
+            case Status.Idle:
+            case Status.Loading: {
+                return dynamicHeader(loading);
+            }
+            case Status.Failed: {
+                return dynamicHeader(error);
+            }
+            case Status.Succeeded:
+            default: {
+                return dynamicHeader();
+            }
+        }
+    }
+
+    switch (status) {
+        case Status.Idle:
+        case Status.Loading: {
+            return staticHeader(loading);
+        }
+        case Status.Failed: {
+            return staticHeader(error);
+        }
+        case Status.Succeeded:
+        default: {
+            return staticHeader();
+        }
+    }
 };
 
 export default DrugCardHeader;
