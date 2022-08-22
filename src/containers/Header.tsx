@@ -127,11 +127,13 @@ const Header: React.FC<Props> = ({ loadingDrugs }: Props) => {
                                     </IconButton>
                                 </Tooltip>
                                 {selectedDrugsIsEmpty ? (
-                                    <Tooltip title="Add">
-                                        <IconButton onClick={handleCreate}>
-                                            <AddIcon />
-                                        </IconButton>
-                                    </Tooltip>
+                                    !readonly && (
+                                        <Tooltip title="Add">
+                                            <IconButton onClick={handleCreate}>
+                                                <AddIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    )
                                 ) : (
                                     <Tooltip title="Clear selection">
                                         <IconButton onClick={handleClearSelection}>
