@@ -58,7 +58,8 @@ const DrugCard: React.FC<Props> = (props: Props) => {
     const { formik, status, message } = useCardFormik(
         drugName,
         countryId,
-        composition.map(({ name }) => name)
+        composition.map(({ name }) => name),
+        cost
     );
     const {
         values,
@@ -165,13 +166,17 @@ const DrugCard: React.FC<Props> = (props: Props) => {
                     </Fade>
                 </DrugCardHeader>
                 <DrugCardContent
-                    isEdit={isEdit}
-                    composition={composition}
+                    {...{ isEdit, composition }}
                     compositionValues={values.composition}
                     error={errors.composition}
                     onChange={setFieldValue}
                 />
-                <DrugCardFooter {...{ cost, createdAt, updatedAt }}>
+                <DrugCardFooter
+                    {...{ isEdit, createdAt, updatedAt }}
+                    cost={values.cost}
+                    error={errors.cost}
+                    onChange={setFieldValue}
+                >
                     <Fade in={isActionButtonsVisible}>
                         <Box style={{ marginLeft: 'auto' }}>
                             <FooterActionButtons
