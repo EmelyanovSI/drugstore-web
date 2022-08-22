@@ -3,10 +3,8 @@ import {
     Badge,
     Box,
     Card,
-    CardContent,
     Fade,
-    Tooltip,
-    Typography
+    Tooltip
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
@@ -27,10 +25,10 @@ import { fetchDrugsByActiveSubstance } from '../../redux/drugsSlice';
 import { GroupBy } from '../../constants/enums';
 import ActionButtons from './ActionButtons';
 import DrugCardHeader from './DrugCardHeader';
-import { correctName } from '../../utils';
 import { useCardFormik } from '../../hooks/useCardFormik';
 import DrugCardFooter from './DrugCardFooter';
 import FooterActionButtons from './FooterActionButtons';
+import DrugCardContent from './DrugCardContent';
 
 interface Props {
     drug: Drug;
@@ -162,13 +160,7 @@ const DrugCard: React.FC<Props> = (props: Props) => {
                         </Box>
                     </Fade>
                 </DrugCardHeader>
-                <CardContent>{
-                    composition.map(({ _id, name, activeSubstance }) => (
-                        <Typography key={_id} variant="body2">
-                            {activeSubstance ? <strong>{correctName(name)}</strong> : correctName(name)}
-                        </Typography>
-                    ))
-                }</CardContent>
+                <DrugCardContent isEdit={isEdit} composition={composition} />
                 <DrugCardFooter {...{ cost, createdAt, updatedAt }}>
                     <Fade in={isActionButtonsVisible}>
                         <Box style={{ marginLeft: 'auto' }}>

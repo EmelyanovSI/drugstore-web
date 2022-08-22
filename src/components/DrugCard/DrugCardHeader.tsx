@@ -96,6 +96,7 @@ const CardHeaderDynamic: React.FC<DynamicHeaderProps> = (props: DynamicHeaderPro
             size="small"
             margin="dense"
             label="Drug name"
+            placeholder="Drug name"
             value={drug}
             error={!!drugError}
             helperText={drugError}
@@ -129,6 +130,7 @@ const CardHeaderDynamic: React.FC<DynamicHeaderProps> = (props: DynamicHeaderPro
                     {...params}
                     margin="dense"
                     label="Country"
+                    placeholder="Country"
                     error={!!countryError}
                     helperText={countryError}
                     onClick={handleStopPropagation}
