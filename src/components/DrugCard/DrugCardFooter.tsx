@@ -16,13 +16,17 @@ const DrugCardFooter: React.FC<DrugCardFooterProps> = (props: DrugCardFooterProp
     const updatedTime = updatedAt ? DateTime.fromJSDate(updatedAt) : createdTime;
     const updatedTimeString = updatedTime?.toFormat('yyyy LLL dd');
 
+    const handleStopPropagation = (event: React.MouseEvent<HTMLDivElement, MouseEvent> | React.FormEvent<HTMLDivElement>) => {
+        event.stopPropagation();
+    };
+
     const costChip = cost ? (
         <Chip
             label={`$${cost}`}
             size="small"
             variant="outlined"
             color="success"
-            onClick={() => {}}
+            onClick={handleStopPropagation}
         />
     ) : (
         <Chip
@@ -30,7 +34,7 @@ const DrugCardFooter: React.FC<DrugCardFooterProps> = (props: DrugCardFooterProp
             size="small"
             variant="outlined"
             color="warning"
-            onClick={() => {}}
+            onClick={handleStopPropagation}
         />
     );
 
@@ -40,7 +44,7 @@ const DrugCardFooter: React.FC<DrugCardFooterProps> = (props: DrugCardFooterProp
             size="small"
             variant="outlined"
             color="success"
-            onClick={() => {}}
+            onClick={handleStopPropagation}
         />
     ) : null;
 

@@ -87,6 +87,10 @@ const CardHeaderDynamic: React.FC<DynamicHeaderProps> = (props: DynamicHeaderPro
         onChange('country', value);
     };
 
+    const handleStopPropagation = (event: React.MouseEvent<HTMLDivElement, MouseEvent> | React.FormEvent<HTMLDivElement>) => {
+        event.stopPropagation();
+    };
+
     const title = (
         <TextField
             size="small"
@@ -96,6 +100,7 @@ const CardHeaderDynamic: React.FC<DynamicHeaderProps> = (props: DynamicHeaderPro
             error={!!drugError}
             helperText={drugError}
             onChange={handleDrugChange}
+            onClick={handleStopPropagation}
             required
         />
     );
@@ -126,6 +131,7 @@ const CardHeaderDynamic: React.FC<DynamicHeaderProps> = (props: DynamicHeaderPro
                     label="Country"
                     error={!!countryError}
                     helperText={countryError}
+                    onClick={handleStopPropagation}
                     required
                 />
             )}
