@@ -55,7 +55,11 @@ const DrugCard: React.FC<Props> = (props: Props) => {
     const [isCheckButtonVisible, setIsCheckButtonVisible] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
 
-    const { formik, status, message } = useCardFormik(drugName, countryId);
+    const { formik, status, message } = useCardFormik(
+        drugName,
+        countryId,
+        composition.map(({ name }) => name)
+    );
     const {
         values,
         errors,
@@ -160,7 +164,13 @@ const DrugCard: React.FC<Props> = (props: Props) => {
                         </Box>
                     </Fade>
                 </DrugCardHeader>
-                <DrugCardContent isEdit={isEdit} composition={composition} />
+                <DrugCardContent
+                    isEdit={isEdit}
+                    composition={composition}
+                    compositionValues={values.composition}
+                    error={errors.composition}
+                    onChange={setFieldValue}
+                />
                 <DrugCardFooter {...{ cost, createdAt, updatedAt }}>
                     <Fade in={isActionButtonsVisible}>
                         <Box style={{ marginLeft: 'auto' }}>

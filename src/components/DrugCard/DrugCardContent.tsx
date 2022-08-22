@@ -9,7 +9,9 @@ interface StaticProps {
 }
 
 interface DynamicProps extends StaticProps {
-
+    compositionValues: Array<string>;
+    error?: string | Array<string>;
+    onChange: (field: string, value: any, shouldValidate?: boolean) => void;
 }
 
 interface Props extends DynamicProps {
@@ -31,8 +33,12 @@ const StaticCardContent: React.FC<StaticProps> = (props: StaticProps) => {
 };
 
 const DynamicCardContent: React.FC<DynamicProps> = (props: DynamicProps) => {
-    const { composition } = props;
+    const { composition, compositionValues, error, onChange } = props;
     const substances = composition.map(({ name }) => name);
+
+    const handleCompositionChange = (event: React.SyntheticEvent, value: string | string[]) => {
+        onChange('composition', value);
+    };
 
     const handleStopPropagation = (event: React.MouseEvent<HTMLDivElement, MouseEvent> | React.FormEvent<HTMLDivElement>) => {
         event.stopPropagation();
@@ -46,6 +52,8 @@ const DynamicCardContent: React.FC<DynamicProps> = (props: DynamicProps) => {
                 size="small"
                 options={substances}
                 defaultValue={[...substances]}
+                value={compositionValues}
+                onChange={handleCompositionChange}
                 renderTags={(value: readonly string[], getTagProps) => (
                     value.map((option, index) => (
                         <Chip
@@ -61,7 +69,10 @@ const DynamicCardContent: React.FC<DynamicProps> = (props: DynamicProps) => {
                         {...params}
                         label="Substance(s)"
                         placeholder="Substance"
+                        error={!!error}
+                        helperText={Array.isArray(error) ? error.join(' ') : error}
                         onClick={handleStopPropagation}
+                        required
                     />
                 )}
             />
@@ -70,11 +81,11 @@ const DynamicCardContent: React.FC<DynamicProps> = (props: DynamicProps) => {
 };
 
 const DrugCardContent: React.FC<Props> = (props: Props) => {
-    const { isEdit, composition } = props;
+    const { isEdit, composition, ...other } = props;
 
     if (isEdit) {
         return (
-            <DynamicCardContent composition={composition} />
+            <DynamicCardContent {...other} composition={composition} />
         );
     }
 

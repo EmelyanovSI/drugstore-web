@@ -12,7 +12,7 @@ const nameValidationSchema = () => Yup.string()
     .max(20, 'Must be 20 characters or less')
     .required('Required');
 
-export const useCardFormik = (drug: string, countryId: string) => {
+export const useCardFormik = (drug: string, countryId: string, composition: Array<string>) => {
     const [status, setStatus] = useState(Status.Idle);
     const [message, setMessage] = useState<Message>(null);
     const [country, setCountry] = useState<Country | null>(null);
@@ -31,11 +31,16 @@ export const useCardFormik = (drug: string, countryId: string) => {
     const formik = useFormik({
         initialValues: {
             drug,
-            country: country?.name ?? ''
+            country: country?.name ?? '',
+            composition
         },
         validationSchema: Yup.object({
             drug: nameValidationSchema(),
-            country: nameValidationSchema().nullable()
+            country: nameValidationSchema().nullable(),
+            composition: Yup.array().of(nameValidationSchema()).test({
+                message: 'Must be 1 substance or more',
+                test: arr => !!arr?.length
+            })
         }),
         enableReinitialize: true,
         onSubmit: values => {
