@@ -3,18 +3,13 @@ import {
     Badge,
     Box,
     Card,
-    CardActions,
     CardContent,
-    Checkbox,
     Fade,
-    IconButton,
     Tooltip,
     Typography
 } from '@mui/material';
-import JoinInnerIcon from '@mui/icons-material/JoinInner';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
-import { Favorite, FavoriteBorder } from '@mui/icons-material';
 
 import { Drug } from '../../interfaces/drugs.interface';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -34,6 +29,8 @@ import ActionButtons from './ActionButtons';
 import DrugCardHeader from './DrugCardHeader';
 import { correctName } from '../../utils';
 import { useCardFormik } from '../../hooks/useCardFormik';
+import DrugCardFooter from './DrugCardFooter';
+import FooterActionButtons from './FooterActionButtons';
 
 interface Props {
     drug: Drug;
@@ -47,7 +44,9 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         name: drugName,
         country: countryId,
         composition,
-        cost
+        cost,
+        createdAt,
+        updatedAt
     } = props.drug;
     const readonly = useAppSelector<boolean>((state) => state.appReducer.readonly);
     const isSelected = useAppSelector(selectIsDrugSelected(drugId));
@@ -170,28 +169,17 @@ const DrugCard: React.FC<Props> = (props: Props) => {
                         </Typography>
                     ))
                 }</CardContent>
-                <CardActions>
-                    ~ ${cost || '10'}
+                <DrugCardFooter {...{ cost, createdAt, updatedAt }}>
                     <Fade in={isActionButtonsVisible}>
                         <Box style={{ marginLeft: 'auto' }}>
-                            <Tooltip title="Similar">
-                                <IconButton onClick={handleSimilarClick}>
-                                    <JoinInnerIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Favorite">
-                                <Checkbox
-                                    color="error"
-                                    size="small"
-                                    icon={<FavoriteBorder />}
-                                    checkedIcon={<Favorite />}
-                                    checked={isFavorite}
-                                    onClick={handleFavoriteClick}
-                                />
-                            </Tooltip>
+                            <FooterActionButtons
+                                isFavorite={isFavorite}
+                                onSimilar={handleSimilarClick}
+                                onFavorite={handleFavoriteClick}
+                            />
                         </Box>
                     </Fade>
-                </CardActions>
+                </DrugCardFooter>
             </Card>
         </Badge>
     );
