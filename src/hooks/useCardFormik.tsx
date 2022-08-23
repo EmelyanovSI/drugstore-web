@@ -1,16 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 
 import { Status } from '../constants/enums';
 import { Message } from '../constants/types';
 import { Country } from '../interfaces/countries.interface';
 import { getCountryById } from '../services/countries.service';
-
-const nameValidationSchema = () => Yup.string()
-    .min(2, 'Must be 2 characters or more')
-    .max(20, 'Must be 20 characters or less')
-    .required('Required');
+import { getValidationSchema } from '../utils';
 
 export const useCardFormik = (drug: string, countryId: string, composition: Array<string>, cost?: number) => {
     const [status, setStatus] = useState(Status.Idle);
@@ -35,17 +30,7 @@ export const useCardFormik = (drug: string, countryId: string, composition: Arra
             composition,
             cost: cost ?? ''
         },
-        validationSchema: Yup.object({
-            drug: nameValidationSchema(),
-            country: nameValidationSchema().nullable(),
-            composition: Yup.array().of(nameValidationSchema()).test({
-                message: 'Must be 1 substance or more',
-                test: arr => !!arr?.length
-            }),
-            cost: Yup.number()
-                .min(1, 'Must be $1 or more')
-                .max(999999999, 'Too much amount')
-        }),
+        validationSchema: getValidationSchema(),
         enableReinitialize: true,
         onSubmit: values => {
             alert(JSON.stringify(values, null, 2));

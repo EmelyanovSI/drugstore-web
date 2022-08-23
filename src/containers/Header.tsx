@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     AppBar,
     Badge,
@@ -44,6 +44,7 @@ import ElevationScroll from '../components/ElevationScroll';
 import ScrollTo from '../components/ScrollTo';
 import ChipNav from '../components/ChipNav/ChipNav';
 import { GroupBy, ThemeMode } from '../constants/enums';
+import CreateDrugDialog from '../components/CreateDrugDialog';
 
 interface Props {
     loadingDrugs: boolean;
@@ -60,6 +61,8 @@ const Header: React.FC<Props> = ({ loadingDrugs }: Props) => {
     const selectedDrugsCount = useAppSelector<number>(selectSelectedDrugsCount);
     const isAnyFavoriteInSelected = useAppSelector(selectIsAnyFavoriteInSelected);
     const isAllSelectedAreFavorite = useAppSelector(selectIsAllSelectedAreFavorite);
+
+    const [isOpenAddDialog, setIsOpenAddDialog] = useState(false);
 
     const handleThemeModeChange = () => {
         dispatch(toggleTheme());
@@ -108,7 +111,11 @@ const Header: React.FC<Props> = ({ loadingDrugs }: Props) => {
     };
 
     const handleCreate = () => {
-        // TODO: create card locally with empty fields
+        setIsOpenAddDialog(true);
+    };
+
+    const handleCloseCreation = () => {
+        setIsOpenAddDialog(false);
     };
 
     return (
@@ -200,6 +207,7 @@ const Header: React.FC<Props> = ({ loadingDrugs }: Props) => {
                     </Fab>
                 </Tooltip>
             </ScrollTo>
+            <CreateDrugDialog open={isOpenAddDialog} handleClose={handleCloseCreation} />
         </>
     );
 };

@@ -9,7 +9,7 @@ interface ActionButtonsProps {
     isValid: boolean;
     onSave: React.MouseEventHandler<HTMLButtonElement>;
     onCancel: React.MouseEventHandler<HTMLButtonElement>;
-    onEdit: React.MouseEventHandler<HTMLButtonElement>;
+    onEdit?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const ActionButtons: React.FC<ActionButtonsProps> = (props: ActionButtonsProps) => {
