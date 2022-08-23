@@ -11,6 +11,7 @@ import { Status } from '../constants/enums';
 const CardList: React.FC<DrugsState> = ({ status, message, drugs }: DrugsState) => {
     const drugsIsEmpty = useAppSelector(selectDrugsIsEmpty);
     const drugsCount = useAppSelector<number>((state) => state.appReducer.drugsCount);
+    const readonly = useAppSelector<boolean>((state) => state.appReducer.readonly);
     const drugsSkeletonKeys = Array.from(Array(drugsCount).keys());
 
     if (status === Status.Loading) {
@@ -46,7 +47,9 @@ const CardList: React.FC<DrugsState> = ({ status, message, drugs }: DrugsState) 
             <Grid padding={2}>
                 <Alert severity="warning">
                     <AlertTitle>Warning</AlertTitle>
-                    Drugs not found — <strong>create one yourself!</strong>
+                    Drugs not found
+                    {!readonly && ' — '}
+                    {!readonly && <strong>create one yourself!</strong>}
                 </Alert>
             </Grid>
         );
