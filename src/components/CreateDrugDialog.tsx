@@ -8,7 +8,6 @@ import {
     CardHeader,
     Chip,
     Dialog,
-    DialogActions,
     DialogContent,
     IconButton,
     InputAdornment,
@@ -20,9 +19,11 @@ import CloseIcon from '@mui/icons-material/Close';
 
 import ActionButtons from './DrugCard/ActionButtons';
 import { getValidationSchema } from '../utils';
-import { useAppSelector } from '../redux/store';
+import { useAppDispatch, useAppSelector } from '../redux/store';
 import { Country } from '../interfaces/countries.interface';
 import { CountryChip } from './ChipNav/CountryChip';
+import { createDrug } from '../services/drugs.service';
+import { addDrugToFavorite } from '../redux/appSlice';
 
 interface Props {
     open: boolean;
@@ -39,6 +40,7 @@ const Transition = React.forwardRef(function Transition(
 });
 
 const CreateDrugDialog: React.FC<Props> = (props: Props) => {
+    const dispatch = useAppDispatch();
     const { open, handleClose } = props;
     const countries = useAppSelector<Array<Country>>((state) => state.countriesReducer.countries);
     const substances: Array<string> = [];
@@ -60,7 +62,15 @@ const CreateDrugDialog: React.FC<Props> = (props: Props) => {
         enableReinitialize: true,
         validateOnMount: true,
         onSubmit: values => {
-            alert(JSON.stringify(values, null, 2));
+            const country = countries.find(({ name }) => name === values.country)!._id;
+            createDrug({
+                name: values.drug,
+                country: `${country}`,
+                composition: values.composition.map(value => ({ name: value, activeSubstance: false })),
+                cost: values.cost ? +values.cost : undefined
+            }).then(response => {
+                dispatch(addDrugToFavorite(response.data._id));
+            });
         }
     });
 
@@ -207,8 +217,6 @@ const CreateDrugDialog: React.FC<Props> = (props: Props) => {
                     </CardContent>
                 </Card>
             </DialogContent>
-            <DialogActions>
-            </DialogActions>
         </Dialog>
     );
 };
