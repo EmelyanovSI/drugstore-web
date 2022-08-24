@@ -1,13 +1,18 @@
-import React from 'react';
-import { CardActions, Chip, IconButton, InputAdornment, TextField } from '@mui/material';
-import { DateTime } from 'luxon';
+import React, { useEffect, useState } from 'react';
+import { CardActions, Chip, Fade, IconButton, InputAdornment, TextField } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { DateTime } from 'luxon';
 
-interface StaticProps {
+interface CommonProps {
     cost?: number | string;
 }
 
-interface DynamicProps extends StaticProps {
+interface StaticProps {
+    cost?: number | string;
+    onClick: () => void;
+}
+
+interface DynamicProps extends CommonProps {
     error?: string;
     onChange: (field: string, value: any, shouldValidate?: boolean) => void;
 }
@@ -15,8 +20,8 @@ interface DynamicProps extends StaticProps {
 interface Props extends DynamicProps {
     children?: JSX.Element & React.ReactNode;
     isEdit: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 const handleStopPropagation = (event: React.MouseEvent<HTMLDivElement, MouseEvent> | React.FormEvent<HTMLDivElement>) => {
@@ -24,7 +29,12 @@ const handleStopPropagation = (event: React.MouseEvent<HTMLDivElement, MouseEven
 };
 
 const StaticCardFooter: React.FC<StaticProps> = (props: StaticProps) => {
-    const { cost } = props;
+    const { cost, onClick } = props;
+
+    const handleChipClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent> | React.FormEvent<HTMLDivElement>) => {
+        handleStopPropagation(event);
+        onClick();
+    };
 
     return cost ? (
         <Chip
@@ -32,7 +42,7 @@ const StaticCardFooter: React.FC<StaticProps> = (props: StaticProps) => {
             size="small"
             variant="outlined"
             color="success"
-            onClick={handleStopPropagation}
+            onClick={handleChipClick}
         />
     ) : (
         <Chip
@@ -88,22 +98,58 @@ const DrugCardFooter: React.FC<Props> = (props: Props) => {
         ...other
     } = props;
 
-    const createdTime = createdAt ? DateTime.fromJSDate(createdAt) : null;
-    const updatedTime = updatedAt ? DateTime.fromJSDate(updatedAt) : createdTime;
-    const updatedTimeString = updatedTime?.toFormat('yyyy LLL dd');
+    const createdTime = createdAt ? DateTime.fromISO(createdAt) : null;
+    const updatedTime = updatedAt ? DateTime.fromISO(updatedAt) : createdTime;
+    const updatedTimeString = updatedTime?.toFormat('dd LLL yyyy');
+    const diff = updatedTime && DateTime.now().diff(updatedTime, 'months');
+    const isOutdated = diff ? diff.months > 6 : false;
+    const [showDate, setShowDate] = useState(false);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            showDate && setShowDate(false);
+        }, 3000);
+        return () => clearTimeout(timeout);
+    }, [showDate]);
+
+    const handleClick = () => {
+        setShowDate(true);
+    };
+
+    const outdatedChip = isOutdated ? (
+        <Chip
+            label="Outdated"
+            size="small"
+            variant="outlined"
+            color="error"
+            onClick={handleStopPropagation}
+        />
+    ) : (
+        <Fade in={showDate}>
+            <Chip
+                label={updatedTimeString}
+                size="small"
+                variant="outlined"
+                color="success"
+                onClick={handleStopPropagation}
+            />
+        </Fade>
+    );
 
     return (
         <CardActions>
-            {isEdit ? <DynamicCardFooter {...other} cost={cost} /> : <StaticCardFooter cost={cost} />}
-            {!isEdit && updatedTimeString && (
-                <Chip
-                    label={updatedTimeString}
-                    size="small"
-                    variant="outlined"
-                    color="success"
-                    onClick={handleStopPropagation}
+            {isEdit ? (
+                <DynamicCardFooter
+                    {...other}
+                    cost={cost}
+                />
+            ) : (
+                <StaticCardFooter
+                    cost={cost}
+                    onClick={handleClick}
                 />
             )}
+            {!isEdit && cost && outdatedChip}
             {children}
         </CardActions>
     );
