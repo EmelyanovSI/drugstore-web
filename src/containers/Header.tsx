@@ -37,7 +37,9 @@ import {
     selectSelectedDrugsCount,
     selectSelectedDrugsIsEmpty,
     setGroupBy,
-    toggleReadonly
+    toggleReadonly,
+    markDrugAsDeselected,
+    removeDrugFromFavorite
 } from '../redux/appSlice';
 import { fetchDrugs, fetchDrugsByCountry, fetchDrugsByIds } from '../redux/drugsSlice';
 import ElevationScroll from '../components/ElevationScroll';
@@ -45,6 +47,7 @@ import ScrollTo from '../components/ScrollTo';
 import ChipNav from '../components/ChipNav/ChipNav';
 import { GroupBy, ThemeMode } from '../constants/enums';
 import CreateDrugDialog from '../components/CreateDrugDialog';
+import { deleteDrug } from '../services/drugs.service';
 
 interface Props {
     loadingDrugs: boolean;
@@ -55,6 +58,7 @@ const Header: React.FC<Props> = ({ loadingDrugs }: Props) => {
     const mode = useAppSelector<ThemeMode>((state) => state.themeReducer.mode);
     const selectedCountryId = useAppSelector<string>((state) => state.appReducer.selectedCountryId);
     const favoriteDrugsIds = useAppSelector<Array<string>>((state) => state.appReducer.favoriteDrugsIds);
+    const selectedDrugsIds = useAppSelector<Array<string>>((state) => state.appReducer.selectedDrugsIds);
     const groupBy = useAppSelector<GroupBy>((state) => state.appReducer.groupBy);
     const readonly = useAppSelector<boolean>((state) => state.appReducer.readonly);
     const selectedDrugsIsEmpty = useAppSelector(selectSelectedDrugsIsEmpty);
@@ -107,7 +111,12 @@ const Header: React.FC<Props> = ({ loadingDrugs }: Props) => {
     };
 
     const handleDelete = () => {
-        // TODO: delete selected drugs from DB & redux storage
+        selectedDrugsIds.forEach(drugId => {
+            deleteDrug(drugId).then(() => {
+                dispatch(markDrugAsDeselected(drugId));
+                dispatch(removeDrugFromFavorite(drugId));
+            });
+        });
     };
 
     const handleCreate = () => {
