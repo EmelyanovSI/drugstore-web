@@ -59,6 +59,7 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         drugName,
         countryId,
         composition.map(({ name }) => name),
+        drugId,
         cost
     );
     const {

@@ -14,7 +14,16 @@ const initialState: DrugsState = {
 export const drugsSlice = createSlice({
     name: 'drugs',
     initialState,
-    reducers: {},
+    reducers: {
+        findAndUpdateDrug(state, action) {
+            state.drugs = state.drugs.map((drug) => {
+                if (drug._id === action.payload._id) {
+                    return action.payload;
+                }
+                return drug;
+            });
+        }
+    },
     extraReducers: builder => builder
         .addMatcher(isPending(
             fetchDrugs,
@@ -74,5 +83,7 @@ export const fetchDrugsByActiveSubstance = createAsyncThunk(
         return response.data;
     }
 );
+
+export const { findAndUpdateDrug } = drugsSlice.actions;
 
 export default drugsSlice.reducer;

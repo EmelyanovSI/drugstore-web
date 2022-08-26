@@ -23,8 +23,8 @@ const StaticCardContent: React.FC<StaticProps> = (props: StaticProps) => {
 
     return (
         <CardContent>
-            {composition.map(({ _id, name, activeSubstance }) => (
-                <Typography key={_id} variant="body2">
+            {composition.map(({ name, activeSubstance }, index) => (
+                <Typography key={index} variant="body2">
                     {activeSubstance ? <strong>{correctName(name)}</strong> : correctName(name)}
                 </Typography>
             ))}
