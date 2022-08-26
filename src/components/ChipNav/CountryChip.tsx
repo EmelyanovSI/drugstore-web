@@ -1,5 +1,6 @@
 import React from 'react';
 import DoneIcon from '@mui/icons-material/Done';
+import AddIcon from '@mui/icons-material/Add';
 import { Chip, ChipProps } from '@mui/material';
 
 interface Props extends ChipProps {
@@ -55,5 +56,29 @@ export const SimilarChip: React.FC<Props> = (props: Props) => {
 
     return (
         <UncheckedCountryChip disabled {...props} />
+    );
+};
+
+export const AddChip: React.FC<Props> = (props: Props) => {
+    const { checked, onClick, onDelete } = props;
+
+    if (checked) {
+        return (
+            <UncheckedCountryChip
+                variant="filled"
+                onDelete={onDelete}
+                icon={<DoneIcon />}
+                {...props}
+            />
+        );
+    }
+
+    return (
+        <UncheckedCountryChip
+            variant="outlined"
+            onDelete={onClick}
+            deleteIcon={<AddIcon />}
+            {...props}
+        />
     );
 };

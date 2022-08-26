@@ -14,7 +14,11 @@ const initialState: CountriesState = {
 export const countriesSlice = createSlice({
     name: 'countries',
     initialState,
-    reducers: {},
+    reducers: {
+        addCountry(state, action) {
+            state.countries.push(action.payload);
+        }
+    },
     extraReducers: builder => builder
         .addCase(fetchCountries.pending, (state) => {
             state.status = Status.Loading;
@@ -37,5 +41,7 @@ export const fetchCountries = createAsyncThunk('drugs/fetchCountries', async () 
     const response = await getCountries();
     return response.data;
 });
+
+export const { addCountry } = countriesSlice.actions;
 
 export default countriesSlice.reducer;

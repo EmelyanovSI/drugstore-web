@@ -8,7 +8,7 @@ export const correctName = (name: string) => {
         .join(' ');
 };
 
-const nameValidationSchema = () => (
+export const nameValidationSchema = () => (
     Yup.string()
         .min(2, 'Must be 2 characters or more')
         .max(20, 'Must be 20 characters or less')
