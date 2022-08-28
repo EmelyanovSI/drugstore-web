@@ -1,19 +1,24 @@
 import React from 'react';
 import { Alert, AlertTitle, Grid, Skeleton, Stack } from '@mui/material';
 
-import DrugCard from '../components/DrugCard';
+import DrugCard from '../components/DrugCard/DrugCard';
 import { Drug } from '../interfaces/drugs.interface';
-import { DrugsState, selectDrugsIsEmpty } from '../redux/drugsSlice';
+import { selectDrugsIsEmpty } from '../redux/drugsSlice';
 import { useAppSelector } from '../redux/store';
+import { DrugsState } from '../redux/state';
+import { Status } from '../constants/enums';
 
-const CardList: React.FC<DrugsState> = ({ loading, error, drugs }: DrugsState) => {
+const CardList: React.FC<DrugsState> = ({ status, message, drugs }: DrugsState) => {
     const drugsIsEmpty = useAppSelector(selectDrugsIsEmpty);
-    const drugsSkeletonCount = useAppSelector(state => state.appReducer.drugsSkeletonCount);
-    if (loading) {
+    const drugsCount = useAppSelector<number>((state) => state.appReducer.drugsCount);
+    const readonly = useAppSelector<boolean>((state) => state.appReducer.readonly);
+    const drugsSkeletonKeys = Array.from(Array(drugsCount).keys());
+
+    if (status === Status.Loading) {
         return (
             <Grid container spacing={4} padding={2}>
-                {Array.from(Array(drugsSkeletonCount)).map((_, index) => (
-                    <Grid item key={index}>
+                {drugsSkeletonKeys.map(key => (
+                    <Grid item key={key}>
                         <Stack spacing={1}>
                             <Skeleton variant="text" sx={{ fontSize: '1rem' }} width={210} />
                             <Skeleton variant="circular" width={40} height={40} />
@@ -26,12 +31,12 @@ const CardList: React.FC<DrugsState> = ({ loading, error, drugs }: DrugsState) =
         );
     }
 
-    if (error) {
+    if (status === Status.Failed) {
         return (
             <Grid padding={2}>
                 <Alert severity="error">
                     <AlertTitle>Error</AlertTitle>
-                    {error} — <strong>try again later!</strong>
+                    {message} — <strong>try again later!</strong>
                 </Alert>
             </Grid>
         );
@@ -42,7 +47,9 @@ const CardList: React.FC<DrugsState> = ({ loading, error, drugs }: DrugsState) =
             <Grid padding={2}>
                 <Alert severity="warning">
                     <AlertTitle>Warning</AlertTitle>
-                    Drugs not found — <strong>create one yourself!</strong>
+                    Drugs not found
+                    {!readonly && ' — '}
+                    {!readonly && <strong>create one yourself!</strong>}
                 </Alert>
             </Grid>
         );

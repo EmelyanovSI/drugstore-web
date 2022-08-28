@@ -1,54 +1,57 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isFulfilled, isPending, isRejected } from '@reduxjs/toolkit';
 
-import { FulfilledAction, RejectedAction, RootState } from './store';
-import { Drug } from '../interfaces/drugs.interface';
-import { getDrugs, getDrugsByCountry } from '../services/drugs.service';
-
-export interface DrugsState {
-    drugs: Array<Drug>;
-    loading: boolean;
-    error?: string | null;
-}
+import { RootState } from './store';
+import { DrugsState } from './state';
+import { Status } from '../constants/enums';
+import { getDrugById, getDrugs, getDrugsByCountry } from '../services/drugs.service';
 
 const initialState: DrugsState = {
     drugs: [],
-    loading: false
+    status: Status.Idle,
+    message: null
 };
 
 export const drugsSlice = createSlice({
     name: 'drugs',
     initialState,
-    reducers: {},
+    reducers: {
+        findAndUpdateDrug(state, action) {
+            state.drugs = state.drugs.map((drug) => {
+                if (drug._id === action.payload._id) {
+                    return action.payload;
+                }
+                return drug;
+            });
+        }
+    },
     extraReducers: builder => builder
-        .addCase(fetchDrugs.pending, (state) => {
-            state.loading = true;
+        .addMatcher(isPending(
+            fetchDrugs,
+            fetchDrugsByCountry,
+            fetchDrugsByIds,
+            fetchDrugsByActiveSubstance
+        ), (state) => {
+            state.status = Status.Loading;
         })
-        .addCase(fetchDrugs.fulfilled, (state, action) => {
-            state.drugs = action.payload.slice(1, 20);
+        .addMatcher(isFulfilled(
+            fetchDrugs,
+            fetchDrugsByCountry,
+            fetchDrugsByIds,
+            fetchDrugsByActiveSubstance
+        ), (state, action) => {
+            state.drugs = action.payload.slice(0, 20);
+            state.message = null;
+            state.status = Status.Succeeded;
         })
-        .addCase(fetchDrugs.rejected, (state, action) => {
-            state.error = action.error.message;
+        .addMatcher(isRejected(
+            fetchDrugs,
+            fetchDrugsByCountry,
+            fetchDrugsByIds,
+            fetchDrugsByActiveSubstance
+        ), (state, action) => {
+            state.message = action.error.message;
+            state.status = Status.Failed;
         })
-        .addCase(fetchDrugsByCountry.pending, (state) => {
-            state.loading = true;
-        })
-        .addCase(fetchDrugsByCountry.fulfilled, (state, action) => {
-            state.drugs = action.payload.slice(1, 20);
-        })
-        .addCase(fetchDrugsByCountry.rejected, (state, action) => {
-            state.error = action.error.message;
-        })
-        .addMatcher<FulfilledAction | RejectedAction>(
-            action => (
-                action.type.endsWith('fetchDrugs/fulfilled') ||
-                action.type.endsWith('fetchDrugs/rejected') ||
-                action.type.endsWith('fetchDrugsByCountry/fulfilled') ||
-                action.type.endsWith('fetchDrugsByCountry/rejected')
-            ),
-            state => {
-                state.loading = false;
-            }
-        )
 });
 
 export const selectDrugsCount = (state: RootState) => state.drugsReducer.drugs.length;
@@ -63,5 +66,24 @@ export const fetchDrugsByCountry = createAsyncThunk('drugs/fetchDrugsByCountry',
     const response = await getDrugsByCountry(countryId);
     return response.data;
 });
+
+export const fetchDrugsByIds = createAsyncThunk('drugs/fetchDrugsByIds', async (drugsIds: Array<string>) => {
+    const drugsByIds = [];
+    for (const id of drugsIds) {
+        const response = await getDrugById(id);
+        drugsByIds.push(response.data);
+    }
+    return drugsByIds;
+});
+
+export const fetchDrugsByActiveSubstance = createAsyncThunk(
+    'drugs/fetchDrugsByActiveSubstance',
+    async (activeSubstanceId?: string) => {
+        const response = await getDrugs();
+        return response.data;
+    }
+);
+
+export const { findAndUpdateDrug } = drugsSlice.actions;
 
 export default drugsSlice.reducer;
