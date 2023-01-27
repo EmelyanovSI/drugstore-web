@@ -6,7 +6,7 @@ import { ThemeMode } from '../constants/enums';
 const { Dark, Light } = ThemeMode;
 
 const initialState: ThemeState = {
-    mode: Light
+    mode: window.matchMedia('(prefers-color-scheme: dark)').matches ? Dark : Light
 };
 
 export const themeSlice = createSlice({
