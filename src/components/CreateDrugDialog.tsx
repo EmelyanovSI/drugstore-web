@@ -28,6 +28,7 @@ import { addDrugToFavorite } from '../redux/appSlice';
 interface Props {
     open: boolean;
     handleClose: (event: {}, reason: 'backdropClick' | 'escapeKeyDown') => void;
+    handleRefresh: () => void;
 }
 
 const Transition = React.forwardRef(function Transition(
@@ -41,7 +42,7 @@ const Transition = React.forwardRef(function Transition(
 
 const CreateDrugDialog: React.FC<Props> = (props: Props) => {
     const dispatch = useAppDispatch();
-    const { open, handleClose } = props;
+    const { open, handleClose, handleRefresh } = props;
     const countries = useAppSelector<Array<Country>>((state) => state.countriesReducer.countries);
     const substances: Array<string> = [];
 
@@ -70,6 +71,7 @@ const CreateDrugDialog: React.FC<Props> = (props: Props) => {
                 cost: values.cost ? +values.cost : undefined
             }).then(response => {
                 dispatch(addDrugToFavorite(response.data._id));
+                handleRefresh();
             });
         }
     });

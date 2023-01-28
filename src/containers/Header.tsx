@@ -36,7 +36,6 @@ import {
     selectIsAllSelectedAreFavorite,
     selectSelectedDrugsCount,
     selectSelectedDrugsIsEmpty,
-    setGroupBy,
     toggleReadonly,
     markDrugAsDeselected,
     removeDrugFromFavorite
@@ -84,7 +83,6 @@ const Header: React.FC<Props> = ({ loadingDrugs }: Props) => {
                 break;
             }
             case GroupBy.Similar: {
-                dispatch(setGroupBy(GroupBy.All));
                 break;
             }
             case GroupBy.Favorite: {
@@ -117,6 +115,7 @@ const Header: React.FC<Props> = ({ loadingDrugs }: Props) => {
                 dispatch(removeDrugFromFavorite(drugId));
             });
         });
+        handleRefresh();
     };
 
     const handleCreate = () => {
@@ -216,7 +215,7 @@ const Header: React.FC<Props> = ({ loadingDrugs }: Props) => {
                     </Fab>
                 </Tooltip>
             </ScrollTo>
-            <CreateDrugDialog open={isOpenAddDialog} handleClose={handleCloseCreation} />
+            <CreateDrugDialog open={isOpenAddDialog} handleClose={handleCloseCreation} {...{ handleRefresh }} />
         </>
     );
 };
