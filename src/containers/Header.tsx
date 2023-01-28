@@ -159,7 +159,7 @@ const Header: React.FC<Props> = ({ loadingDrugs }: Props) => {
                                         </IconButton>
                                     </Tooltip>
                                 )}
-                                {!selectedDrugsIsEmpty && (
+                                {!readonly && !selectedDrugsIsEmpty && (
                                     <Tooltip title="Delete selection">
                                         <IconButton onClick={handleDelete}>
                                             <DeleteOutlinedIcon />
