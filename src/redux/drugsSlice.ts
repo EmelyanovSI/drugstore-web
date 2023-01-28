@@ -3,7 +3,12 @@ import { createAsyncThunk, createSlice, isFulfilled, isPending, isRejected } fro
 import { RootState } from './store';
 import { DrugsState } from './state';
 import { Status } from '../constants/enums';
-import { getDrugById, getDrugs, getDrugsByActiveSubstance, getDrugsByCountry } from '../services/drugs.service';
+import {
+    getDrugs,
+    getDrugsByActiveSubstance,
+    getDrugsByCountry,
+    getDrugsByIds
+} from '../services/drugs.service';
 
 const initialState: DrugsState = {
     drugs: [],
@@ -68,12 +73,8 @@ export const fetchDrugsByCountry = createAsyncThunk('drugs/fetchDrugsByCountry',
 });
 
 export const fetchDrugsByIds = createAsyncThunk('drugs/fetchDrugsByIds', async (drugsIds: Array<string>) => {
-    const drugsByIds = [];
-    for (const id of drugsIds) {
-        const response = await getDrugById(id);
-        drugsByIds.push(response.data);
-    }
-    return drugsByIds;
+    const response = await getDrugsByIds(drugsIds);
+    return response.data;
 });
 
 export const fetchDrugsByActiveSubstance = createAsyncThunk(

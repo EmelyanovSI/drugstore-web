@@ -7,11 +7,6 @@ export const getDrugs = async (): Promise<APIResponse<Array<Drug>>> => {
     return data;
 };
 
-export const getDrugById = async (drugId: string): Promise<APIResponse<Drug>> => {
-    const { data } = await axios.get(`/drugs/${drugId}`);
-    return data;
-};
-
 export const getDrugsByCountry = async (countryId: string): Promise<APIResponse<Array<Drug>>> => {
     const { data } = await axios.get(`/${countryId}/drugs`);
     return data;
@@ -34,5 +29,10 @@ export const deleteDrug = async (drugId: string): Promise<APIResponse<Drug>> => 
 
 export const getDrugsByActiveSubstance = async (activeSubstance?: string): Promise<APIResponse<Array<Drug>>> => {
     const { data } = await axios.get(`/drugs/activeSubstance/${activeSubstance}`);
+    return data;
+};
+
+export const getDrugsByIds = async (drugsIds: Array<string>): Promise<APIResponse<Array<Drug>>> => {
+    const { data } = await axios.post('/drugs/list', drugsIds);
     return data;
 };
