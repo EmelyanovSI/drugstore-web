@@ -31,3 +31,8 @@ export const deleteDrug = async (drugId: string): Promise<APIResponse<Drug>> => 
     const { data } = await axios.delete(`/drugs/${drugId}`);
     return data;
 };
+
+export const getDrugsByActiveSubstance = async (activeSubstance?: string): Promise<APIResponse<Array<Drug>>> => {
+    const { data } = await axios.get(`/drugs/activeSubstance/${activeSubstance}`);
+    return data;
+};

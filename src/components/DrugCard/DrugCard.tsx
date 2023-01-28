@@ -95,7 +95,7 @@ const DrugCard: React.FC<Props> = (props: Props) => {
         event.stopPropagation();
         const substance = composition.find(substance => substance.activeSubstance);
         dispatch(setGroupBy(GroupBy.Similar));
-        dispatch(fetchDrugsByActiveSubstance(substance?._id));
+        dispatch(fetchDrugsByActiveSubstance(substance?.name));
     };
 
     const handleActionEdit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
