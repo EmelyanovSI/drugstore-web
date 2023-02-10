@@ -2,7 +2,7 @@ import React, { ComponentType } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { darkScrollbar } from '@mui/material';
 
-import { useAppSelector } from './redux/store';
+import { useAppSelector } from '@/redux/store';
 
 export default function appTheme<T>(Component: ComponentType<T>) {
     return (props: T) => {

@@ -1,6 +1,6 @@
-import axios from '../axios';
-import { Drug } from '../interfaces/drugs.interface';
-import { APIResponse } from '../interfaces/response.interface';
+import axios from '@/axios';
+import { Drug } from '@/interfaces/drugs.interface';
+import { APIResponse } from '@/interfaces/response.interface';
 
 export const getDrugs = async (): Promise<APIResponse<Array<Drug>>> => {
     const { data } = await axios.get('/drugs');

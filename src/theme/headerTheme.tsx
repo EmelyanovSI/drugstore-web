@@ -1,7 +1,7 @@
 import React, { ComponentType } from 'react';
 import { Components, createTheme, Theme, ThemeProvider } from '@mui/material/styles';
 
-import { useAppSelector } from '../redux/store';
+import { useAppSelector } from '@/redux/store';
 
 export default function headerTheme<T>(Component: ComponentType<T>) {
     return (props: T) => {

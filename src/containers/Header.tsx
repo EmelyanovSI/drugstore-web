@@ -24,10 +24,14 @@ import EditOffIcon from '@mui/icons-material/EditOff';
 import EditOffOutlinedIcon from '@mui/icons-material/EditOffOutlined';
 import { Favorite, FavoriteBorder, FavoriteBorderTwoTone } from '@mui/icons-material';
 
-import { useAppDispatch, useAppSelector } from '../redux/store';
-import { fetchCountries } from '../redux/countriesSlice';
-import { toggleTheme } from '../redux/themeSlice';
-import headerTheme from '../theme/headerTheme';
+import ElevationScroll from '@/components/ElevationScroll';
+import ScrollTo from '@/components/ScrollTo';
+import ChipNav from '@/components/ChipNav/ChipNav';
+import CreateDrugDialog from '@/components/CreateDrugDialog';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { fetchCountries } from '@/redux/countriesSlice';
+import { toggleTheme } from '@/redux/themeSlice';
+import { fetchDrugs, fetchDrugsByCountry, fetchDrugsByIds } from '@/redux/drugsSlice';
 import {
     addDrugsToFavorite,
     markAllDrugsAsDeselected,
@@ -39,14 +43,10 @@ import {
     toggleReadonly,
     markDrugAsDeselected,
     removeDrugFromFavorite
-} from '../redux/appSlice';
-import { fetchDrugs, fetchDrugsByCountry, fetchDrugsByIds } from '../redux/drugsSlice';
-import ElevationScroll from '../components/ElevationScroll';
-import ScrollTo from '../components/ScrollTo';
-import ChipNav from '../components/ChipNav/ChipNav';
-import { GroupBy, ThemeMode } from '../constants/enums';
-import CreateDrugDialog from '../components/CreateDrugDialog';
-import { deleteDrug } from '../services/drugs.service';
+} from '@/redux/appSlice';
+import headerTheme from '@/theme/headerTheme';
+import { GroupBy, ThemeMode } from '@/constants/enums';
+import { deleteDrug } from '@/services/drugs.service';
 
 interface Props {
     loadingDrugs: boolean;

@@ -1,20 +1,20 @@
 import React, { useEffect } from 'react';
 import { Alert, Box, Snackbar } from '@mui/material';
 
-import { useAppDispatch, useAppSelector } from '../redux/store';
+import Header from '@/containers/Header';
+import CardList from '@/containers/CardList';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { CountriesState, DrugsState } from '@/redux/state';
+import { fetchCountries, selectCountriesCount, selectCountriesIsEmpty } from '@/redux/countriesSlice';
+import { setCountriesCount, setDrugsCount, setGroupBy } from '@/redux/appSlice';
 import {
     fetchDrugs,
     fetchDrugsByCountry,
     fetchDrugsByIds,
     selectDrugsCount,
     selectDrugsIsEmpty
-} from '../redux/drugsSlice';
-import { fetchCountries, selectCountriesCount, selectCountriesIsEmpty } from '../redux/countriesSlice';
-import { setCountriesCount, setDrugsCount, setGroupBy } from '../redux/appSlice';
-import Header from '../containers/Header';
-import CardList from '../containers/CardList';
-import { GroupBy, Status } from '../constants/enums';
-import { CountriesState, DrugsState } from '../redux/state';
+} from '@/redux/drugsSlice';
+import { GroupBy, Status } from '@/constants/enums';
 
 const autoHideDuration = 6000;
 

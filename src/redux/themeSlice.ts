@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { ThemeState } from './state';
-import { ThemeMode } from '../constants/enums';
+
+import { ThemeMode } from '@/constants/enums';
 
 const { Dark, Light } = ThemeMode;
 

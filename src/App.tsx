@@ -1,9 +1,9 @@
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import appTheme from './appTheme';
-import HomePage from './pages/HomePage';
-import NotFoundPage from './pages/NotFoundPage';
+import appTheme from '@/appTheme';
+import HomePage from '@/pages/HomePage';
+import NotFoundPage from '@/pages/NotFoundPage';
 
 const App: React.FC = () => {
     return (

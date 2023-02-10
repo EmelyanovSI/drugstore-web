@@ -3,14 +3,15 @@ import { Badge, Box, Divider, InputBase, Stack, Tab, Tooltip } from '@mui/materi
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
-import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { selectFavoriteDrugsCount, selectFavoriteDrugsIsEmpty, setGroupBy } from '../../redux/appSlice';
 import ChipList from './ChipList';
 import { AddChip, CountryChip, SimilarChip } from './CountryChip';
-import { GroupBy } from '../../constants/enums';
-import { nameValidationSchema } from '../../utils';
-import { createCountry } from '../../services/countries.service';
-import { addCountry } from '../../redux/countriesSlice';
+
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { selectFavoriteDrugsCount, selectFavoriteDrugsIsEmpty, setGroupBy } from '@/redux/appSlice';
+import { addCountry } from '@/redux/countriesSlice';
+import { createCountry } from '@/services/countries.service';
+import { GroupBy } from '@/constants/enums';
+import { nameValidationSchema } from '@/utils';
 
 const ChipNav: React.FC = () => {
     const dispatch = useAppDispatch();

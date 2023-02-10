@@ -1,6 +1,6 @@
-import axios from '../axios';
-import { Country } from '../interfaces/countries.interface';
-import { APIResponse } from '../interfaces/response.interface';
+import axios from '@/axios';
+import { Country } from '@/interfaces/countries.interface';
+import { APIResponse } from '@/interfaces/response.interface';
 
 export const getCountries = async (): Promise<APIResponse<Array<Country>>> => {
     const { data } = await axios.get('/countries');

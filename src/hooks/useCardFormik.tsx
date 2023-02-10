@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 
-import { Status } from '../constants/enums';
-import { Message } from '../constants/types';
-import { Country } from '../interfaces/countries.interface';
-import { getCountryById } from '../services/countries.service';
-import { getValidationSchema } from '../utils';
-import { updateDrug } from '../services/drugs.service';
-import { useAppDispatch, useAppSelector } from '../redux/store';
-import { findAndUpdateDrug } from '../redux/drugsSlice';
-import { Drug } from '../interfaces/drugs.interface';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { findAndUpdateDrug } from '@/redux/drugsSlice';
+import { Country } from '@/interfaces/countries.interface';
+import { Drug } from '@/interfaces/drugs.interface';
+import { getCountryById } from '@/services/countries.service';
+import { updateDrug } from '@/services/drugs.service';
+import { Status } from '@/constants/enums';
+import { Message } from '@/constants/types';
+import { getValidationSchema } from '@/utils';
 
 export const useCardFormik = (
     drug: string,

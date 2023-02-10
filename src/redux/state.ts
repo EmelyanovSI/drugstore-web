@@ -1,7 +1,7 @@
-import { GroupBy, Status, ThemeMode } from '../constants/enums';
-import { Message } from '../constants/types';
-import { Country } from '../interfaces/countries.interface';
-import { Drug } from '../interfaces/drugs.interface';
+import { GroupBy, Status, ThemeMode } from '@/constants/enums';
+import { Message } from '@/constants/types';
+import { Country } from '@/interfaces/countries.interface';
+import { Drug } from '@/interfaces/drugs.interface';
 
 export interface ThemeState {
     mode: ThemeMode;

@@ -1,12 +1,13 @@
 import React from 'react';
 import { Skeleton, Tab, Tabs } from '@mui/material';
 
-import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { selectCountriesIsEmpty } from '../../redux/countriesSlice';
-import { setGroupBy, setSelectedCountry } from '../../redux/appSlice';
 import { CountryChip } from './CountryChip';
-import { GroupBy, Status } from '../../constants/enums';
-import { CountriesState } from '../../redux/state';
+
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { selectCountriesIsEmpty } from '@/redux/countriesSlice';
+import { setGroupBy, setSelectedCountry } from '@/redux/appSlice';
+import { CountriesState } from '@/redux/state';
+import { GroupBy, Status } from '@/constants/enums';
 
 const ChipList: React.FC = () => {
     const dispatch = useAppDispatch();

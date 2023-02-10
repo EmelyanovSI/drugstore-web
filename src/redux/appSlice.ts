@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from './store';
 import { AppState } from './state';
-import { GroupBy } from '../constants/enums';
+
+import { GroupBy } from '@/constants/enums';
 
 const initialState: AppState = {
     selectedDrugsIds: [],

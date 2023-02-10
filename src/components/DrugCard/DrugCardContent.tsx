@@ -1,8 +1,8 @@
 import React from 'react';
 import { Autocomplete, CardContent, Chip, TextField, Typography } from '@mui/material';
 
-import { correctName } from '../../utils';
-import { Substance } from '../../interfaces/substacne.interface';
+import { Substance } from '@/interfaces/substacne.interface';
+import { correctName } from '@/utils';
 
 interface StaticProps {
     composition: Array<Substance>;

@@ -8,12 +8,12 @@ import {
     TextField
 } from '@mui/material';
 
-import { correctName } from '../../utils';
-import { useAppSelector } from '../../redux/store';
-import { Country } from '../../interfaces/countries.interface';
-import { Message } from '../../constants/types';
-import { Status } from '../../constants/enums';
-import { CountryChip } from '../ChipNav/CountryChip';
+import { CountryChip } from '@/components/ChipNav/CountryChip';
+import { useAppSelector } from '@/redux/store';
+import { Country } from '@/interfaces/countries.interface';
+import { Message } from '@/constants/types';
+import { Status } from '@/constants/enums';
+import { correctName } from '@/utils';
 
 interface State {
     message: Message;

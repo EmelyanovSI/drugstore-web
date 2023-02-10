@@ -1,12 +1,12 @@
 import React from 'react';
 import { Alert, AlertTitle, Grid, Skeleton, Stack } from '@mui/material';
 
-import DrugCard from '../components/DrugCard/DrugCard';
-import { Drug } from '../interfaces/drugs.interface';
-import { selectDrugsIsEmpty } from '../redux/drugsSlice';
-import { useAppSelector } from '../redux/store';
-import { DrugsState } from '../redux/state';
-import { Status } from '../constants/enums';
+import DrugCard from '@/components/DrugCard/DrugCard';
+import { useAppSelector } from '@/redux/store';
+import { selectDrugsIsEmpty } from '@/redux/drugsSlice';
+import { DrugsState } from '@/redux/state';
+import { Drug } from '@/interfaces/drugs.interface';
+import { Status } from '@/constants/enums';
 
 const CardList: React.FC<DrugsState> = ({ status, message, drugs }: DrugsState) => {
     const drugsIsEmpty = useAppSelector(selectDrugsIsEmpty);

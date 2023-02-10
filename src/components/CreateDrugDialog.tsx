@@ -18,12 +18,13 @@ import { TransitionProps } from '@mui/material/transitions';
 import CloseIcon from '@mui/icons-material/Close';
 
 import ActionButtons from './DrugCard/ActionButtons';
-import { getValidationSchema } from '../utils';
-import { useAppDispatch, useAppSelector } from '../redux/store';
-import { Country } from '../interfaces/countries.interface';
 import { CountryChip } from './ChipNav/CountryChip';
-import { createDrug } from '../services/drugs.service';
-import { addDrugToFavorite } from '../redux/appSlice';
+
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { addDrugToFavorite } from '@/redux/appSlice';
+import { Country } from '@/interfaces/countries.interface';
+import { createDrug } from '@/services/drugs.service';
+import { getValidationSchema } from '@/utils';
 
 interface Props {
     open: boolean;

@@ -2,8 +2,9 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from './store';
 import { CountriesState } from './state';
-import { Status } from '../constants/enums';
-import { getCountries } from '../services/countries.service';
+
+import { Status } from '@/constants/enums';
+import { getCountries } from '@/services/countries.service';
 
 const initialState: CountriesState = {
     countries: [],

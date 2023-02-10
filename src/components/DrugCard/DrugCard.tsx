@@ -9,8 +9,14 @@ import {
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 
-import { Drug } from '../../interfaces/drugs.interface';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
+import ActionButtons from './ActionButtons';
+import DrugCardHeader from './DrugCardHeader';
+import DrugCardContent from './DrugCardContent';
+import DrugCardFooter from './DrugCardFooter';
+import FooterActionButtons from './FooterActionButtons';
+
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { fetchDrugsByActiveSubstance } from '@/redux/drugsSlice';
 import {
     addDrugToFavorite,
     markDrugAsDeselected,
@@ -20,15 +26,10 @@ import {
     selectIsDrugSelected,
     selectSelectedDrugsIsEmpty,
     setGroupBy
-} from '../../redux/appSlice';
-import { fetchDrugsByActiveSubstance } from '../../redux/drugsSlice';
-import { GroupBy } from '../../constants/enums';
-import ActionButtons from './ActionButtons';
-import DrugCardHeader from './DrugCardHeader';
-import { useCardFormik } from '../../hooks/useCardFormik';
-import DrugCardFooter from './DrugCardFooter';
-import FooterActionButtons from './FooterActionButtons';
-import DrugCardContent from './DrugCardContent';
+} from '@/redux/appSlice';
+import { useCardFormik } from '@/hooks/useCardFormik';
+import { Drug } from '@/interfaces/drugs.interface';
+import { GroupBy } from '@/constants/enums';
 
 interface Props {
     drug: Drug;

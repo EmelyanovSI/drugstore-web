@@ -2,13 +2,14 @@ import { createAsyncThunk, createSlice, isFulfilled, isPending, isRejected } fro
 
 import { RootState } from './store';
 import { DrugsState } from './state';
-import { Status } from '../constants/enums';
+
+import { Status } from '@/constants/enums';
 import {
     getDrugs,
     getDrugsByActiveSubstance,
     getDrugsByCountry,
     getDrugsByIds
-} from '../services/drugs.service';
+} from '@/services/drugs.service';
 
 const initialState: DrugsState = {
     drugs: [],
