@@ -6,7 +6,7 @@ import CardList from '@/containers/CardList';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { CountriesState, DrugsState } from '@/redux/state';
 import { fetchCountries, selectCountriesCount, selectCountriesIsEmpty } from '@/redux/countriesSlice';
-import { setCountriesCount, setDrugsCount, setGroupBy } from '@/redux/appSlice';
+import { setCountriesCount, setDrugsCount } from '@/redux/appSlice';
 import {
     fetchDrugs,
     fetchDrugsByCountry,
@@ -51,7 +51,8 @@ const HomePage: React.FC = () => {
                 break;
             }
             case GroupBy.Similar: {
-                drugsIsEmpty && dispatch(setGroupBy(GroupBy.All));
+                // TODO: add active substance to storage and request here
+                // drugsIsEmpty && dispatch(setGroupBy(GroupBy.All));
                 break;
             }
         }
